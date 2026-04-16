@@ -1076,6 +1076,15 @@
       color: var(--ink);
       font-size: 15px;
       line-height: 1.8;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      overflow-x: hidden;
+    }
+
+    #readme-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
     }
 
     #readme-content h1,
@@ -1158,6 +1167,8 @@
       border-collapse: collapse;
       margin: 16px 0;
       font-size: 14px;
+      display: block;
+      overflow-x: auto;
     }
 
     #readme-content th,
@@ -1904,6 +1915,9 @@
       <div class="nav-item active" onclick="go('home')">
         <div class="nav-chip home">🏠</div> Beranda
       </div>
+      <div class="nav-item" onclick="go('konsep')">
+        <div class="nav-chip" style="background:#f0fdf4; color:#166534;">💡</div> Konsep Dasar
+      </div>
       <div class="nav-item" onclick="go('php')">
         <div class="nav-chip php">🐘</div> PHP Native
       </div>
@@ -1991,6 +2005,90 @@
             </div>
             <div class="quiz-cta-right">→</div>
           </div>
+        </div>
+      </div>
+
+      <!-- ── KONSEP DASAR ── -->
+      <div class="view" id="view-konsep">
+        <div class="content-wrap">
+          <div class="page-header">
+            <div class="page-badge" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0;">💡 Konsep Dasar</div>
+            <h2>Pengertian & Istilah Umum</h2>
+            <p>Pahami istilah-istilah teknologi yang kita gunakan di project ini sebelum masuk ke detail kode.</p>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#f0fdf4;color:#166534;">01</span>
+              <h3>Apa itu AJAX?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p><strong>AJAX</strong> (Asynchronous JavaScript and XML) adalah teknik pemrograman yang memungkinkan halaman web untuk berkomunikasi dengan server (mengirim atau mengambil data) di latar belakang <strong>tanpa perlu me-reload/refresh halaman secara keseluruhan</strong>.</p>
+              <div class="callout tip"><span class="ico">📌</span>
+                <p><strong>Penerapan di project kita:</strong> Saat kamu menyeret (drag &amp; drop) tugas dari satu kolom ke kolom lain, kita pakai AJAX (melalui Fetch API JavaScript) untuk memberitahu PHP agar mengupdate database. Oleh karenanya layar tidak berkedip atau reload ketika memindahkan kartu.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#f0fdf4;color:#166534;">02</span>
+              <h3>Apa itu PHP Native?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p><strong>PHP Native</strong> artinya kita menulis kode bahasa pemrograman PHP secara murni, dari nol (from scratch), tanpa menggunakan bantuan kerangka kerja (Framework) seperti Laravel atau CodeIgniter.</p>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>Kenapa pakai Native untuk UKK?</strong> Dengan Native, kamu akan belajar konsep paling dasar bagaimana sebuah website berinteraksi dengan database dan memproses data. Ini fondasi yang sangat krusial sebelum kamu ke depannya belajar framework.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#f0fdf4;color:#166534;">03</span>
+              <h3>Apa itu CDN?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p><strong>CDN</strong> (Content Delivery Network) adalah jaringan server global yang ditugaskan untuk mengirimkan konten tĩnh (seperti file CSS style Bootstrap atau library JavaScript) secara cepat kepada pengguna.</p>
+              <div class="callout tip"><span class="ico">🔗</span>
+                <p><strong>Penerapan di project kita:</strong> Alih-alih mendownload seluruh file Bootstrap ke folder project lokal, kita cukup menaruh link <code>&lt;link href="https://cdn..."&gt;</code>. Saat website dibuka, browser otomatis mengambil style Bootstrap dari server CDN terdekat secara cepat.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#f0fdf4;color:#166534;">04</span>
+              <h3>MySQL &amp; Relational Database</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p><strong>MySQL</strong> adalah sistem manajemen database relasional (Relational Database Management System / RDBMS) yang menggunakan bahasa standar SQL (Structured Query Language).</p>
+              <p>Data disimpan di dalam tabel yang terdiri dari baris (record) dan kolom (field). Di dalam sistem To Do List kita, kita punya tabel <code>tasks</code> yang berisi kolom <code>id</code>, <code>task</code>, <code>tanggal</code>, <code>priority</code>, dan <code>status</code>.</p>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#f0fdf4;color:#166534;">05</span>
+              <h3>CRUD (Create, Read, Update, Delete)</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p><strong>CRUD</strong> adalah empat operasi dasar pada basis data.</p>
+              <table class="info-tbl">
+                <tr><th>Operasi</th><th>SQL Command</th><th>Contoh di Project Kita</th></tr>
+                <tr><td><strong>C</strong>reate</td><td>INSERT INTO</td><td>Saat kamu mengisi form lalu klik tombol "Simpan" untuk menambah tugas baru.</td></tr>
+                <tr><td><strong>R</strong>ead</td><td>SELECT</td><td>Saat browser mengambil kumpulan tugas dari database dan menampilkannya di tampilan kanban.</td></tr>
+                <tr><td><strong>U</strong>pdate</td><td>UPDATE</td><td>Saat kamu drag tugas (pindah kolom), kode mengubah status di database.</td></tr>
+                <tr><td><strong>D</strong>elete</td><td>DELETE</td><td>Saat kamu mengklik icon merah untuk menghapus tugas selamanya.</td></tr>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -3931,7 +4029,7 @@ x = kiri+kanan    y = atas+bawah
     // ════════════════════════════════════
     //  NAVIGATION
     // ════════════════════════════════════
-    const ALL_VIEWS = ['home', 'php', 'js', 'css', 'bs', 'readme', 'alur', 'quiz', 'challenge'];
+    const ALL_VIEWS = ['home', 'konsep', 'php', 'js', 'css', 'bs', 'readme', 'alur', 'quiz', 'challenge'];
     const visited = new Set();
 
     function go(id) {
