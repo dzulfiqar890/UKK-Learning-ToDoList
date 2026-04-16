@@ -1,0 +1,32 @@
+/* Tampilan papan to do list */
+.card-column {
+    background-color: #ebecf0;
+    min-width: 320px;
+    max-width: 320px;
+}
+
+/* Efek drag and drop */
+.card.draggable {
+    cursor: grab;
+    transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.card.draggable:active {
+    cursor: grabbing;
+}
+
+.card.draggable.dragging {
+    opacity: 0.5;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    transform: scale(1.02);
+}
+
+/* Area drop zone */
+.droppable {
+    min-height: 100px;
+    transition: background-color 0.2s;
+}
+
+.droppable.drag-over {
+    background-color: #dcdfe5 !important;
+}

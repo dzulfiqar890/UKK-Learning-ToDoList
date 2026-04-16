@@ -1,0 +1,4156 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belajar UKK — To Do List | Fiqar</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <!-- Import Marked.js untuk render Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* ═══════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════ */
+    :root {
+      --cream: #f5f0e8;
+      --cream2: #ede7d9;
+      --cream3: #e3dccf;
+      --paper: #faf7f2;
+      --ink: #2c2416;
+      --ink2: #4a3f2f;
+      --ink3: #7a6a52;
+      --muted: #a89880;
+      --border: #d8cfc0;
+      --border2: #c8bfb0;
+
+      --php: #8b5cf6;
+      --php-bg: #f3eeff;
+      --php-bdr: #d4c5f9;
+
+      --js: #d97706;
+      --js-bg: #fffbeb;
+      --js-bdr: #fcd34d;
+
+      --css: #059669;
+      --css-bg: #ecfdf5;
+      --css-bdr: #a7f3d0;
+
+      --bs: #2563eb;
+      --bs-bg: #eff6ff;
+      --bs-bdr: #bfdbfe;
+
+      --accent: #c2410c;
+      --accent-bg: #fff7ed;
+      --success: #15803d;
+      --danger: #b91c1c;
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 2px 12px rgba(44, 36, 22, 0.08);
+      --shadow-lg: 0 8px 32px rgba(44, 36, 22, 0.14);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle paper texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(194, 65, 12, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 90%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════════════
+   GATE / PASSWORD OVERLAY
+═══════════════════════════════════════ */
+    #gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ink);
+      overflow: hidden;
+    }
+
+    /* Animated background lines */
+    #gate::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background: repeating-linear-gradient(45deg,
+          transparent,
+          transparent 60px,
+          rgba(245, 240, 232, 0.02) 60px,
+          rgba(245, 240, 232, 0.02) 61px);
+      animation: bgSlide 20s linear infinite;
+    }
+
+    @keyframes bgSlide {
+      from {
+        transform: translateX(0) translateY(0);
+      }
+
+      to {
+        transform: translateX(86px) translateY(86px);
+      }
+    }
+
+    .gate-card {
+      position: relative;
+      background: #1e1812;
+      border: 1px solid rgba(245, 240, 232, 0.1);
+      border-radius: 20px;
+      padding: 52px 48px 44px;
+      width: 100%;
+      max-width: 460px;
+      margin: 20px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+      animation: gateIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes gateIn {
+      from {
+        opacity: 0;
+        transform: translateY(32px) scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .gate-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent), #9a3412);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(194, 65, 12, 0.4);
+    }
+
+    .gate-card h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #f5f0e8;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .gate-card .gate-sub {
+      color: rgba(245, 240, 232, 0.45);
+      font-size: 13.5px;
+      margin-bottom: 32px;
+    }
+
+    .gate-hint {
+      background: rgba(245, 240, 232, 0.05);
+      border: 1px solid rgba(245, 240, 232, 0.1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: rgba(245, 240, 232, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gate-hint span {
+      color: rgba(245, 240, 232, 0.8);
+      font-style: italic;
+    }
+
+    .gate-input-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .gate-input {
+      width: 100%;
+      background: rgba(245, 240, 232, 0.06);
+      border: 1.5px solid rgba(245, 240, 232, 0.12);
+      border-radius: 12px;
+      padding: 16px 48px 16px 18px;
+      font-family: 'Fira Code', monospace;
+      font-size: 15px;
+      color: #f5f0e8;
+      outline: none;
+      transition: all 0.25s;
+      letter-spacing: 0.5px;
+    }
+
+    .gate-input::placeholder {
+      color: rgba(245, 240, 232, 0.2);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: 0;
+    }
+
+    .gate-input:focus {
+      border-color: var(--accent);
+      background: rgba(245, 240, 232, 0.08);
+      box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.15);
+    }
+
+    .gate-input.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+      animation: shake 0.4s ease;
+    }
+
+    .gate-input.success {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-8px);
+      }
+
+      40% {
+        transform: translateX(8px);
+      }
+
+      60% {
+        transform: translateX(-5px);
+      }
+
+      80% {
+        transform: translateX(5px);
+      }
+    }
+
+    .gate-eye {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: rgba(245, 240, 232, 0.3);
+      font-size: 18px;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .gate-eye:hover {
+      color: rgba(245, 240, 232, 0.7);
+    }
+
+    .gate-err {
+      font-size: 12.5px;
+      color: #f87171;
+      margin-bottom: 14px;
+      min-height: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .gate-err.show {
+      opacity: 1;
+    }
+
+    .gate-btn {
+      width: 100%;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gate-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+    }
+
+    .gate-btn:hover {
+      background: #9a3412;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(194, 65, 12, 0.4);
+    }
+
+    .gate-btn:active {
+      transform: translateY(0);
+    }
+
+    .gate-progress {
+      display: flex;
+      gap: 4px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+
+    .gate-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(245, 240, 232, 0.15);
+      transition: all 0.2s;
+    }
+
+    .gate-dot.filled {
+      background: var(--accent);
+      transform: scale(1.2);
+    }
+
+    /* Gate exit animation */
+    #gate.exit {
+      animation: gateOut 0.7s cubic-bezier(0.7, 0, 1, 1) forwards;
+    }
+
+    @keyframes gateOut {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      60% {
+        opacity: 1;
+        transform: scale(1.03);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none;
+      }
+    }
+
+    /* ═══════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════ */
+    #app {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #app.visible {
+      opacity: 1;
+    }
+
+    /* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px;
+      background: var(--cream);
+      border-right: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 50;
+    }
+
+    .sidebar-top {
+      padding: 28px 24px 20px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .sidebar-eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .sidebar-title {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .sidebar-title em {
+      font-style: italic;
+      color: var(--ink3);
+      font-size: 14px;
+      display: block;
+      font-weight: 300;
+      margin-top: 2px;
+    }
+
+    .nav-group-label {
+      padding: 18px 20px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 20px;
+      cursor: pointer;
+      transition: all 0.18s;
+      border-radius: 0;
+      color: var(--ink3);
+      font-size: 14px;
+      font-weight: 500;
+      position: relative;
+      margin: 1px 8px;
+      border-radius: 10px;
+    }
+
+    .nav-item:hover {
+      background: var(--cream2);
+      color: var(--ink);
+    }
+
+    .nav-item.active {
+      background: var(--cream2);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 22px;
+      border-radius: 0 3px 3px 0;
+      background: var(--accent);
+    }
+
+    .nav-chip {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .nav-chip.php {
+      background: var(--php-bg);
+    }
+
+    .nav-chip.js {
+      background: var(--js-bg);
+    }
+
+    .nav-chip.css {
+      background: var(--css-bg);
+    }
+
+    .nav-chip.bs {
+      background: var(--bs-bg);
+    }
+
+    .nav-chip.readme {
+      background: #e0f2fe;
+      color: #0284c7;
+    }
+
+    .nav-chip.quiz {
+      background: #fff7ed;
+    }
+
+    .nav-chip.home {
+      background: var(--cream3);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 20px;
+      border-top: 1.5px solid var(--border);
+    }
+
+    .progress-wrap {
+      background: var(--cream2);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .progress-label {
+      font-weight: 600;
+      color: var(--ink2);
+    }
+
+    .progress-pct {
+      font-family: 'Fira Code', monospace;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), #ea580c);
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 0%;
+    }
+
+    /* ═══════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════ */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .view {
+      display: none;
+      animation: viewIn 0.3s ease;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes viewIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ═══════════════════════════════════════
+   HOME / HERO
+═══════════════════════════════════════ */
+    .hero {
+      padding: 56px 56px 40px;
+      max-width: 820px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-bg);
+      border: 1px solid #fed7aa;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 58px;
+      font-weight: 700;
+      line-height: 1.08;
+      color: var(--ink);
+      margin-bottom: 18px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--ink3);
+      max-width: 480px;
+      margin-bottom: 44px;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    /* Topic cards */
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      max-width: 640px;
+      margin-bottom: 16px;
+    }
+
+    .topic-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topic-card::after {
+      content: '→';
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      font-size: 18px;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .topic-card:hover::after {
+      color: var(--ink2);
+      transform: translateX(3px);
+    }
+
+    .topic-card.php:hover {
+      border-color: var(--php);
+    }
+
+    .topic-card.js:hover {
+      border-color: var(--js);
+    }
+
+    .topic-card.css:hover {
+      border-color: var(--css);
+    }
+
+    .topic-card.bs:hover {
+      border-color: var(--bs);
+    }
+
+    .topic-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .topic-card.php .topic-icon {
+      background: var(--php-bg);
+    }
+
+    .topic-card.js .topic-icon {
+      background: var(--js-bg);
+    }
+
+    .topic-card.css .topic-icon {
+      background: var(--css-bg);
+    }
+
+    .topic-card.bs .topic-icon {
+      background: var(--bs-bg);
+    }
+
+    .topic-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .topic-card p {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .topic-count {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .topic-card.php .topic-count {
+      background: var(--php-bg);
+      color: var(--php);
+    }
+
+    .topic-card.js .topic-count {
+      background: var(--js-bg);
+      color: var(--js);
+    }
+
+    .topic-card.css .topic-count {
+      background: var(--css-bg);
+      color: var(--css);
+    }
+
+    .topic-card.bs .topic-count {
+      background: var(--bs-bg);
+      color: var(--bs);
+    }
+
+    .quiz-cta {
+      background: var(--ink);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      max-width: 640px;
+      transition: all 0.2s;
+      color: var(--cream);
+    }
+
+    .quiz-cta:hover {
+      background: #3d3020;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .quiz-cta-left h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .quiz-cta-left p {
+      font-size: 13px;
+      color: rgba(245, 240, 232, 0.55);
+      margin: 0;
+    }
+
+    .quiz-cta-right {
+      background: var(--accent);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .quiz-cta:hover .quiz-cta-right {
+      transform: scale(1.1) rotate(10deg);
+    }
+
+    /* ═══════════════════════════════════════
+   MATERI VIEW
+═══════════════════════════════════════ */
+    .content-wrap {
+      max-width: 780px;
+      padding: 48px 56px;
+    }
+
+    .page-header {
+      margin-bottom: 36px;
+      padding-bottom: 28px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .page-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .page-badge.php {
+      background: var(--php-bg);
+      color: var(--php);
+      border: 1px solid var(--php-bdr);
+    }
+
+    .page-badge.js {
+      background: var(--js-bg);
+      color: var(--js);
+      border: 1px solid var(--js-bdr);
+    }
+
+    .page-badge.css {
+      background: var(--css-bg);
+      color: var(--css);
+      border: 1px solid var(--css-bdr);
+    }
+
+    .page-badge.bs {
+      background: var(--bs-bg);
+      color: var(--bs);
+      border: 1px solid var(--bs-bdr);
+    }
+
+    .page-header h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+
+    .page-header p {
+      margin-top: 8px;
+      color: var(--ink3);
+      font-size: 15px;
+      font-weight: 300;
+    }
+
+    /* ── Accordion ── */
+    .acc-item {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      background: #fff;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .acc-item:hover {
+      border-color: var(--border2);
+      box-shadow: var(--shadow);
+    }
+
+    .acc-item.open {
+      border-color: var(--border2);
+      box-shadow: var(--shadow);
+    }
+
+    .acc-head {
+      padding: 18px 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+
+    .acc-num {
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--cream2);
+      padding: 3px 9px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .acc-head h3 {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .acc-arrow {
+      color: var(--muted);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .acc-item.open .acc-arrow {
+      transform: rotate(180deg);
+    }
+
+    .acc-body {
+      display: none;
+      padding: 4px 22px 22px;
+      border-top: 1.5px solid var(--border);
+    }
+
+    .acc-item.open .acc-body {
+      display: block;
+    }
+
+    .acc-body p {
+      color: var(--ink3);
+      font-size: 14px;
+      line-height: 1.85;
+      margin: 14px 0 10px;
+      font-weight: 300;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .acc-body p strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .code-wrap {
+      margin: 14px 0;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #fefefe;
+      max-width: 100%;
+    }
+
+    .code-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      background: var(--cream2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-lang {
+      font-family: 'Fira Code', monospace;
+      font-size: 10.5px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .code-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .code-dot:nth-child(1) {
+      background: #ff5f57;
+    }
+
+    .code-dot:nth-child(2) {
+      background: #ffbd2e;
+    }
+
+    .code-dot:nth-child(3) {
+      background: #28ca42;
+    }
+
+    pre {
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--ink2);
+      overflow-x: auto;
+      background: #fefefe;
+    }
+
+    /* ── Syntax colors (warm palette) ── */
+    .kw {
+      color: #7c3aed;
+      font-weight: 500;
+    }
+
+    /* keyword - purple */
+    .fn {
+      color: #1d4ed8;
+    }
+
+    /* function - blue */
+    .str {
+      color: #15803d;
+    }
+
+    /* string - green */
+    .num {
+      color: #b45309;
+    }
+
+    /* number - amber */
+    .cm {
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    /* comment - gray */
+    .var {
+      color: #c2410c;
+    }
+
+    /* variable - orange-red */
+    .op {
+      color: #0369a1;
+    }
+
+    /* operator - sky */
+
+    /* ── Markdown Readme Styling ── */
+    #readme-content {
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    #readme-content h1,
+    #readme-content h2,
+    #readme-content h3 {
+      font-family: 'Fraunces', serif;
+      color: var(--ink);
+      margin-top: 32px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    #readme-content h1 {
+      font-size: 32px;
+      border-bottom: 1.5px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    #readme-content h2 {
+      font-size: 24px;
+      color: var(--accent);
+    }
+
+    #readme-content h3 {
+      font-size: 19px;
+    }
+
+    #readme-content p {
+      margin-bottom: 16px;
+      color: var(--ink3);
+    }
+
+    #readme-content ul,
+    #readme-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+      color: var(--ink3);
+    }
+
+    #readme-content li {
+      margin-bottom: 6px;
+    }
+
+    #readme-content code {
+      font-family: 'Fira Code', monospace;
+      background: var(--cream2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    #readme-content pre {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    #readme-content pre code {
+      background: transparent;
+      padding: 0;
+      color: var(--ink2);
+    }
+
+    #readme-content blockquote {
+      border-left: 4px solid var(--accent);
+      background: var(--accent-bg);
+      padding: 12px 16px;
+      margin: 16px 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: var(--ink2);
+      font-style: italic;
+    }
+
+    #readme-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+
+    #readme-content th,
+    #readme-content td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    #readme-content th {
+      background: var(--cream);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    #readme-content tr:nth-child(even) {
+      background: rgba(245, 240, 232, 0.3);
+    }
+
+    /* ── Info Table ── */
+    .info-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13.5px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .info-tbl th {
+      background: var(--cream);
+      color: var(--muted);
+      font-size: 10.5px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-tbl td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--cream2);
+      color: var(--ink3);
+      line-height: 1.6;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+
+    .info-tbl td:first-child {
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--php);
+      background: rgba(139, 92, 246, 0.03);
+    }
+
+    .info-tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Colored first-col variants */
+    .info-tbl.js-tbl td:first-child {
+      color: var(--js);
+      background: rgba(217, 119, 6, 0.03);
+    }
+
+    .info-tbl.css-tbl td:first-child {
+      color: var(--css);
+      background: rgba(5, 150, 105, 0.03);
+    }
+
+    .info-tbl.bs-tbl td:first-child {
+      color: var(--bs);
+      background: rgba(37, 99, 235, 0.03);
+    }
+
+    /* ── Callout ── */
+    .callout {
+      display: flex;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      margin: 14px 0;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    .callout .ico {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .callout p {
+      margin: 0;
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .callout.info {
+      background: var(--bs-bg);
+      border-left: 3px solid var(--bs);
+      color: #1e3a5f;
+    }
+
+    .callout.warn {
+      background: var(--js-bg);
+      border-left: 3px solid var(--js);
+      color: #5f3a00;
+    }
+
+    .callout.tip {
+      background: var(--css-bg);
+      border-left: 3px solid var(--css);
+      color: #064e3b;
+    }
+
+    /* ═══════════════════════════════════════
+   QUIZ VIEW
+═══════════════════════════════════════ */
+    .quiz-wrap {
+      max-width: 720px;
+      padding: 48px 56px;
+    }
+
+    /* Intro screen */
+    .q-intro {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      text-align: center;
+    }
+
+    .q-intro-badge {
+      width: 72px;
+      height: 72px;
+      background: var(--ink);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .q-intro h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .q-intro>p {
+      color: var(--ink3);
+      font-size: 15px;
+      font-weight: 300;
+      margin-bottom: 36px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .q-stats {
+      display: flex;
+      gap: 0;
+      justify-content: center;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+
+    .q-stat {
+      flex: 1;
+      padding: 18px 16px;
+      border-right: 1.5px solid var(--border);
+    }
+
+    .q-stat:last-child {
+      border-right: none;
+    }
+
+    .q-stat .val {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .q-stat .lbl {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      border-radius: 12px;
+      padding: 16px 40px;
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary:hover {
+      background: #3d3020;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Question screen */
+    .q-screen {
+      display: none;
+    }
+
+    .q-screen.active {
+      display: block;
+    }
+
+    .q-topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .q-counter {
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .q-counter b {
+      color: var(--ink);
+    }
+
+    .q-pbar {
+      flex: 1;
+      height: 5px;
+      background: var(--cream2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .q-pbar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .q-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    .q-cat {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    .q-cat.php {
+      background: var(--php-bg);
+      color: var(--php);
+    }
+
+    .q-cat.js {
+      background: var(--js-bg);
+      color: var(--js);
+    }
+
+    .q-cat.css {
+      background: var(--css-bg);
+      color: var(--css);
+    }
+
+    .q-cat.bs {
+      background: var(--bs-bg);
+      color: var(--bs);
+    }
+
+    .q-text {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+
+    .q-code {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 14px 0 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12.5px;
+      color: var(--ink2);
+      overflow-x: auto;
+      line-height: 1.8;
+    }
+
+    /* Options */
+    .opts {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .opt {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 14px 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 14px;
+      color: var(--ink2);
+      transition: all 0.18s;
+    }
+
+    .opt:hover:not(.locked) {
+      border-color: var(--ink2);
+      background: var(--cream);
+      transform: translateX(3px);
+    }
+
+    .opt-letter {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--cream2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      flex-shrink: 0;
+      font-weight: 500;
+      transition: all 0.18s;
+    }
+
+    .opt.correct {
+      border-color: var(--css);
+      background: var(--css-bg);
+    }
+
+    .opt.correct .opt-letter {
+      background: var(--css);
+      color: #fff;
+    }
+
+    .opt.wrong {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
+
+    .opt.wrong .opt-letter {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .opt.locked {
+      cursor: default;
+    }
+
+    /* Feedback */
+    .feedback {
+      display: none;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 14px;
+      font-size: 13.5px;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct {
+      background: var(--css-bg);
+      border: 1px solid var(--css-bdr);
+      color: #065f46;
+    }
+
+    .feedback.wrong {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #7f1d1d;
+    }
+
+    .btn-next {
+      display: none;
+      width: 100%;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      border-radius: 11px;
+      padding: 14px;
+      font-family: 'Fraunces', serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-next.show {
+      display: block;
+    }
+
+    .btn-next:hover {
+      background: #3d3020;
+    }
+
+    /* Result */
+    .r-screen {
+      display: none;
+    }
+
+    .r-screen.active {
+      display: block;
+      text-align: center;
+    }
+
+    .r-ring-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 28px;
+    }
+
+    .r-ring-wrap svg {
+      transform: rotate(-90deg);
+    }
+
+    .r-ring-bg {
+      fill: none;
+      stroke: var(--cream2);
+      stroke-width: 12;
+    }
+
+    .r-ring-fill {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 408;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .r-score-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .r-score-text .big {
+      font-family: 'Fraunces', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .r-score-text .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .r-title {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .r-sub {
+      color: var(--ink3);
+      font-size: 14px;
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    .r-breakdown {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .r-item {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 12px;
+    }
+
+    .r-item .v {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .r-item .l {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 13px 28px;
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--cream2);
+      border-color: var(--border2);
+    }
+
+    /* ═══════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════ */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border2);
+    }
+
+    /* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+    .mobile-header, .sidebar-overlay {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header {
+        display: flex;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 60px;
+        background: var(--cream);
+        border-bottom: 1.5px solid var(--border);
+        z-index: 90;
+        align-items: center;
+        padding: 0 20px;
+        justify-content: space-between;
+      }
+      
+      .mobile-title {
+        font-family: 'Fraunces', serif;
+        font-weight: 700;
+        font-size: 18px;
+        color: var(--ink);
+      }
+      
+      .hamburger {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--ink);
+        cursor: pointer;
+        padding: 4px;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 100;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 95;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+        opacity: 1;
+      }
+
+      .main {
+        margin-left: 0;
+        padding-top: 60px;
+      }
+      
+      .info-tbl {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .hero {
+        padding: 32px 24px;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+      }
+
+      .content-wrap, .quiz-wrap {
+        padding: 28px 24px;
+      }
+
+      .topic-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .r-breakdown {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════
+     GATE — Password Screen
+══════════════════════════════════════ -->
+  <div id="gate">
+    <div class="gate-card">
+      <div class="gate-icon">🔐</div>
+      <h1>Area Belajar<br>Privat</h1>
+      <p class="gate-sub">Masukkan kata sandi untuk mengakses materi UKK kamu.</p>
+
+      <div class="gate-hint">
+        💬 Kata Sandi: <span>fiqar ganteng</span>
+      </div>
+
+      <div class="gate-input-wrap">
+        <input type="password" id="gate-input" class="gate-input" placeholder="Ketik kata sandi di sini..."
+          autocomplete="off" spellcheck="false" oninput="gateType()" onkeydown="if(event.key==='Enter') gateSubmit()">
+        <span class="gate-eye" id="gate-eye" onclick="toggleGateEye()">👁</span>
+      </div>
+
+      <div class="gate-err" id="gate-err">❌ Kata sandi salah. Coba lagi!</div>
+
+      <button class="gate-btn" onclick="gateSubmit()">Masuk →</button>
+
+      <div class="gate-progress" id="gate-dots"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+     APP
+══════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- MOBILE HEADER -->
+    <div class="mobile-header">
+      <div class="mobile-title">UKK To Do List</div>
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    </div>
+    
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-eyebrow">// UKK Project</div>
+        <div class="sidebar-title">
+          Belajar PHP
+          <em>To Do List App</em>
+        </div>
+      </div>
+
+      <div class="nav-group-label">Materi</div>
+      <div class="nav-item active" onclick="go('home')">
+        <div class="nav-chip home">🏠</div> Beranda
+      </div>
+      <div class="nav-item" onclick="go('php')">
+        <div class="nav-chip php">🐘</div> PHP Native
+      </div>
+      <div class="nav-item" onclick="go('js')">
+        <div class="nav-chip js">⚡</div> JavaScript
+      </div>
+      <div class="nav-item" onclick="go('css')">
+        <div class="nav-chip css">🎨</div> CSS Kustom
+      </div>
+      <div class="nav-item" onclick="go('bs')">
+        <div class="nav-chip bs">🅱️</div> Bootstrap 5
+      </div>
+      <div class="nav-item" onclick="go('readme')">
+        <div class="nav-chip readme">📖</div> Readme Docs
+      </div>
+      <div class="nav-item" onclick="go('alur')">
+        <div class="nav-chip" style="background:#fdf4ff; color:#9333ea;">🔗</div> Alur Kode
+      </div>
+
+      <div class="nav-group-label">Latihan</div>
+      <div class="nav-item" onclick="go('quiz')">
+        <div class="nav-chip quiz">🧠</div> Kuis Interaktif
+      </div>
+
+      <div class="nav-group-label">Tantangan</div>
+      <div class="nav-item" onclick="go('challenge')">
+        <div class="nav-chip" style="background:#fee2e2; color:#b91c1c;">🎯</div> Challenge Guru
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="progress-wrap">
+          <div class="progress-top">
+            <span class="progress-label">Progress Belajar</span>
+            <span class="progress-pct" id="pct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="pfill"></div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- ── HOME ── -->
+      <div class="view active" id="view-home">
+        <div class="hero">
+          <div class="hero-eyebrow">✨ Persiapan UKK — Selamat datang!</div>
+          <h1>Pahami<br>kodemu,<br><em>kuasai ujianmu.</em></h1>
+          <p>Panduan belajar interaktif untuk project To Do List UKK-mu. Buka setiap topik, pelajari baris per baris,
+            lalu uji diri dengan kuis.</p>
+
+          <div class="topic-grid">
+            <div class="topic-card php" onclick="go('php')">
+              <div class="topic-icon">🐘</div>
+              <h3>PHP Native</h3>
+              <p>Database, POST, GET, query SQL, fungsi, HTML output, dan CDN</p>
+              <span class="topic-count">14 topik</span>
+            </div>
+            <div class="topic-card js" onclick="go('js')">
+              <div class="topic-icon">⚡</div>
+              <h3>JavaScript</h3>
+              <p>Drag & drop, Fetch API, DOM manipulation</p>
+              <span class="topic-count">7 topik</span>
+            </div>
+            <div class="topic-card css" onclick="go('css')">
+              <div class="topic-icon">🎨</div>
+              <h3>CSS Kustom</h3>
+              <p>Kolom kanban, animasi drag, drop zone</p>
+              <span class="topic-count">4 topik</span>
+            </div>
+            <div class="topic-card bs" onclick="go('bs')">
+              <div class="topic-icon">🅱️</div>
+              <h3>Bootstrap 5</h3>
+              <p>Class-class, modal, form, layout flexbox</p>
+              <span class="topic-count">6 topik</span>
+            </div>
+          </div>
+
+          <div class="quiz-cta" onclick="go('quiz')">
+            <div class="quiz-cta-left">
+              <h3>🧠 Kuis Interaktif</h3>
+              <p>20 soal dari semua topik — uji kesiapan sidang UKK-mu</p>
+            </div>
+            <div class="quiz-cta-right">→</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PHP ── -->
+      <div class="view" id="view-php">
+        <div class="content-wrap">
+          <div class="page-header">
+            <div class="page-badge php">🐘 PHP Native</div>
+            <h2>PHP & Database</h2>
+            <p>PHP berjalan di server — merakit data sebelum dikirim ke browser.</p>
+          </div>
+
+          <!-- 1 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">01</span>
+              <h3>Koneksi ke Database</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Baris pertama PHP adalah membuka <strong>jalur komunikasi ke MySQL</strong>. Variabel <code>$db</code>
+                menyimpan jalur ini dan dipakai di seluruh file.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div>
+                  <span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="var">$db</span> = <span class="fn">mysqli_connect</span>(<span class="str">'localhost'</span>, <span class="str">'root'</span>, <span class="str">''</span>, <span class="str">'lat_todo'</span>)
+     <span class="kw">or</span> <span class="fn">die</span>(<span class="str">"Koneksi ke database gagal."</span>);</pre>
+              </div>
+              <table class="info-tbl">
+                <tr>
+                  <th>Parameter</th>
+                  <th>Nilai</th>
+                  <th>Artinya</th>
+                </tr>
+                <tr>
+                  <td>'localhost'</td>
+                  <td>server</td>
+                  <td>Database di komputer yang sama</td>
+                </tr>
+                <tr>
+                  <td>'root'</td>
+                  <td>username</td>
+                  <td>Username default XAMPP</td>
+                </tr>
+                <tr>
+                  <td>''</td>
+                  <td>password</td>
+                  <td>Kosong — default XAMPP tanpa password</td>
+                </tr>
+                <tr>
+                  <td>'lat_todo'</td>
+                  <td>database</td>
+                  <td>Nama database yang digunakan</td>
+                </tr>
+              </table>
+              <div class="callout warn"><span class="ico">⚠️</span>
+                <p><strong>or die()</strong> — Kalau koneksi gagal, PHP langsung berhenti dan tampilkan pesan. Tanpa
+                  ini, error muncul acak di seluruh halaman.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">02</span>
+              <h3>Tambah Tugas — Form POST</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Saat tombol "Simpan" ditekan, browser mengirim data form via <strong>POST</strong>. PHP menangkap,
+                validasi, lalu simpan ke database.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$_POST</span>[<span class="str">'submit'</span>])) {
+  <span class="var">$task</span> = <span class="fn">mysqli_real_escape_string</span>(<span class="var">$db</span>, <span class="var">$_POST</span>[<span class="str">'task_input'</span>]);
+  <span class="var">$tgl</span>  = <span class="var">$_POST</span>[<span class="str">'tanggal'</span>];
+  <span class="var">$prio</span> = <span class="var">$_POST</span>[<span class="str">'priority'</span>];
+
+  <span class="kw">if</span> (!<span class="fn">empty</span>(<span class="var">$task</span>) && !<span class="fn">empty</span>(<span class="var">$tgl</span>) && !<span class="fn">empty</span>(<span class="var">$prio</span>)) {
+    <span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"INSERT INTO tasks (task, tanggal, priority)
+      VALUES ('$task', '$tgl', '$prio')"</span>);
+    <span class="fn">header</span>(<span class="str">'location:index.php?notif=added'</span>);
+    <span class="fn">exit</span>();
+  }
+}</pre>
+              </div>
+              <table class="info-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>isset($_POST['submit'])</td>
+                  <td>Cek apakah tombol submit ditekan</td>
+                </tr>
+                <tr>
+                  <td>mysqli_real_escape_string()</td>
+                  <td>Anti SQL Injection — bersihkan karakter berbahaya</td>
+                </tr>
+                <tr>
+                  <td>!empty()</td>
+                  <td>"Tidak kosong" — validasi semua field</td>
+                </tr>
+                <tr>
+                  <td>INSERT INTO tasks</td>
+                  <td>Tambah baris baru ke tabel database</td>
+                </tr>
+                <tr>
+                  <td>header('location:...')</td>
+                  <td>Redirect ke halaman lain setelah berhasil</td>
+                </tr>
+                <tr>
+                  <td>exit()</td>
+                  <td>Hentikan PHP — wajib setelah header()</td>
+                </tr>
+              </table>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>Kenapa exit() wajib setelah header()?</strong> header() hanya <em>mendaftarkan</em> redirect,
+                  tapi PHP tetap lanjut ke bawah. exit() memaksa PHP berhenti total seketika.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">03</span>
+              <h3>Hapus Tugas — Link GET</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Berbeda dengan POST, hapus tugas pakai <strong>GET</strong> — ID dikirim langsung di URL yang terlihat.
+              </p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="cm">// URL: index.php?del_task=5</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$_GET</span>[<span class="str">'del_task'</span>])) {
+  <span class="var">$id</span> = (<span class="kw">int</span>) <span class="var">$_GET</span>[<span class="str">'del_task'</span>];
+  <span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"DELETE FROM tasks WHERE id=<span class="var">$id</span>"</span>);
+  <span class="fn">header</span>(<span class="str">'location:index.php?notif=deleted'</span>);
+  <span class="fn">exit</span>();
+}</pre>
+              </div>
+              <table class="info-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>$_GET['del_task']</td>
+                  <td>Ambil nilai dari URL: ?del_task=5</td>
+                </tr>
+                <tr>
+                  <td>(int)</td>
+                  <td>Type casting — paksa jadi angka, cegah SQL Injection</td>
+                </tr>
+                <tr>
+                  <td>DELETE FROM tasks WHERE id=</td>
+                  <td>Hapus baris dengan ID tertentu dari database</td>
+                </tr>
+              </table>
+              <div class="callout warn"><span class="ico">🔐</span>
+                <p><strong>POST vs GET:</strong> POST = data di body (tidak terlihat di URL). GET = data di URL
+                  (terlihat). Pakai POST untuk data sensitif, GET untuk navigasi/hapus sederhana.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">04</span>
+              <h3>Update Status via AJAX (PHP menerima)</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Bagian ini menerima kiriman dari JavaScript <strong>tanpa reload halaman</strong>. PHP update database
+                lalu exit — tidak kirim HTML balik.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$_POST</span>[<span class="str">'action'</span>]) && <span class="var">$_POST</span>[<span class="str">'action'</span>] == <span class="str">'update_status'</span>) {
+  <span class="var">$id</span>     = (<span class="kw">int</span>) <span class="var">$_POST</span>[<span class="str">'id'</span>];
+  <span class="var">$status</span> = <span class="fn">mysqli_real_escape_string</span>(<span class="var">$db</span>, <span class="var">$_POST</span>[<span class="str">'status'</span>]);
+  <span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"UPDATE tasks SET status='$status' WHERE id=$id"</span>);
+  <span class="fn">exit</span>(); <span class="cm">// Jangan kirim HTML ke JavaScript!</span>
+}</pre>
+              </div>
+              <div class="callout tip"><span class="ico">🔗</span>
+                <p>Dipanggil oleh JavaScript via <code>fetch('index.php', { method:'POST' })</code>. exit() penting agar
+                  PHP tidak ikut mengirim halaman HTML penuh yang tidak dibutuhkan JS.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">05</span>
+              <h3>Ambil Data & Loop (while + foreach)</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="var">$tasks</span> = [];
+<span class="var">$result</span> = <span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"SELECT * FROM tasks ORDER BY id DESC"</span>);
+<span class="kw">while</span> (<span class="var">$row</span> = <span class="fn">mysqli_fetch_array</span>(<span class="var">$result</span>)) {
+  <span class="var">$row</span>[<span class="str">'status'</span>] = <span class="var">$row</span>[<span class="str">'status'</span>] ?: <span class="str">'belum'</span>; <span class="cm">// Elvis operator</span>
+  <span class="var">$tasks</span>[] = <span class="var">$row</span>;
+}</pre>
+              </div>
+              <table class="info-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>SELECT * FROM tasks ORDER BY id DESC</td>
+                  <td>Ambil semua data, terbaru di atas</td>
+                </tr>
+                <tr>
+                  <td>while ($row = mysqli_fetch_array())</td>
+                  <td>Ambil baris satu per satu sampai habis</td>
+                </tr>
+                <tr>
+                  <td>$row['status'] ?: 'belum'</td>
+                  <td>Elvis: kalau kosong → isi 'belum'</td>
+                </tr>
+                <tr>
+                  <td>$tasks[] = $row</td>
+                  <td>Tambah ke array tanpa set index manual</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- 6 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">06</span>
+              <h3>Operator ?? dan ?: (Null Coalescing & Elvis)</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="cm">// Null Coalescing (??) — kalau tidak ada, pakai default</span>
+<span class="var">$notif</span> = <span class="var">$_GET</span>[<span class="str">'notif'</span>] ?? <span class="str">''</span>;
+<span class="cm">// Kalau $_GET['notif'] ada → pakai itu. Tidak ada → pakai ''</span>
+
+<span class="cm">// Elvis (?:) — kalau falsy, pakai default</span>
+<span class="var">$row</span>[<span class="str">'status'</span>] = <span class="var">$row</span>[<span class="str">'status'</span>] ?: <span class="str">'belum'</span>;
+<span class="cm">// Kalau status tidak kosong → pakai itu. Kosong → 'belum'</span></pre>
+              </div>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>Bedanya:</strong> <code>??</code> khusus cek null/tidak ada. <code>?:</code> cek "falsy"
+                  (null, false, 0, string kosong). Keduanya pengganti if-else dalam satu baris.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">07</span>
+              <h3>Ternary Operator & array_filter</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="cm">// Ternary: kondisi ? kalau_benar : kalau_salah</span>
+<span class="var">$class</span> = <span class="var">$item</span>[<span class="str">'priority'</span>] == <span class="str">'High'</span>
+  ? <span class="str">'danger'</span>
+  : (<span class="var">$item</span>[<span class="str">'priority'</span>] == <span class="str">'Medium'</span> ? <span class="str">'warning'</span> : <span class="str">'success'</span>);
+
+<span class="cm">// array_filter — saring array</span>
+<span class="var">$filtered</span> = <span class="fn">array_filter</span>(<span class="var">$tasks</span>,
+  <span class="fn">fn</span>(<span class="var">$t</span>) => <span class="fn">strtolower</span>(<span class="var">$t</span>[<span class="str">'status'</span>]) == <span class="var">$slug</span>
+);</pre>
+              </div>
+              <table class="info-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>? 'danger' : 'success'</td>
+                  <td>If-else singkat dalam satu baris</td>
+                </tr>
+                <tr>
+                  <td>array_filter($arr, fn)</td>
+                  <td>Saring array, ambil yang sesuai kondisi</td>
+                </tr>
+                <tr>
+                  <td>fn($t) =></td>
+                  <td>Arrow function — fungsi singkat PHP 7.4+</td>
+                </tr>
+                <tr>
+                  <td>strtolower()</td>
+                  <td>Huruf kecil semua — biar tidak case-sensitive</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- 8 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">08</span>
+              <h3>Fungsi alert() — Helper Notifikasi</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>PHP bisa punya <strong>fungsi buatan sendiri (user-defined function)</strong>. Fungsi <code>alert()</code> ini menghasilkan HTML Bootstrap Alert setiap dipanggil — satu fungsi dipakai berkali-kali untuk berbagai jenis notifikasi.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="kw">function</span> <span class="fn">alert</span>(<span class="var">$type</span>, <span class="var">$icon</span>, <span class="var">$txt</span>)
+{
+    <span class="kw">return</span> <span class="str">"
+    &lt;div class='alert alert-<span class="var">$type</span> alert-dismissible fade show shadow-sm text-center'&gt;
+        &lt;i class='fa-solid fa-<span class="var">$icon</span> me-2'&gt;&lt;/i&gt; <span class="var">$txt</span>
+        &lt;button type='button' class='btn-close' data-bs-dismiss='alert'&gt;&lt;/button&gt;
+    &lt;/div&gt;"</span>;
+}
+
+<span class="cm">// Contoh pemanggilan:</span>
+<span class="var">$msg</span> = <span class="fn">alert</span>(<span class="str">'success'</span>, <span class="str">'circle-check'</span>, <span class="str">'Tugas berhasil ditambahkan.'</span>);
+<span class="cm">// Hasilnya: &lt;div class='alert alert-success ...'&gt;</span>
+
+<span class="var">$msg</span> = <span class="fn">alert</span>(<span class="str">'danger'</span>, <span class="str">'triangle-exclamation'</span>, <span class="str">'Harap isi semua kolom.'</span>);
+<span class="cm">// Hasilnya: &lt;div class='alert alert-danger ...'&gt;</span></pre>
+              </div>
+              <table class="info-tbl">
+                <tr><th>Bagian Kode</th><th>Arti</th></tr>
+                <tr><td>function alert($type, $icon, $txt)</td><td>Definisi fungsi dengan 3 PARAMETER — nilai yang dikirim saat dipanggil</td></tr>
+                <tr><td>return "..."</td><td>Fungsi menghasilkan string HTML. Tidak langsung tampil — harus di-echo atau disimpan ke variabel</td></tr>
+                <tr><td>alert-$type</td><td>String interpolation — PHP sisipkan nilai $type ke dalam string. alert-success, alert-danger, dll.</td></tr>
+                <tr><td>fa-$icon</td><td>Nama icon Font Awesome disisipkan dinamis — circle-check, trash-can, triangle-exclamation</td></tr>
+                <tr><td>data-bs-dismiss="alert"</td><td>Bootstrap JS otomatis sembunyikan alert saat tombol ✕ diklik</td></tr>
+              </table>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>String Interpolation PHP:</strong> Variabel di dalam tanda kutip ganda (<code>"</code>) otomatis digantikan nilainya. <code>"alert-$type"</code> dengan $type='success' → <code>"alert-success"</code>. Ini <em>tidak berlaku</em> di tanda kutip tunggal (<code>'</code>).</p>
+              </div>
+              <div class="callout tip"><span class="ico">♻️</span>
+                <p><strong>Prinsip DRY (Don't Repeat Yourself):</strong> Tanpa fungsi ini, kita harus tulis HTML alert yang panjang setiap kali butuh notifikasi. Dengan fungsi, cukup panggil sekali dengan parameter berbeda. Kode makin rapi dan mudah diubah.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">09</span>
+              <h3>Notifikasi dari URL — Pola Redirect + Notif</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Ini pola klasik PHP: setelah operasi berhasil, <strong>redirect ke URL dengan parameter notif</strong>, lalu baca parameter itu untuk tampilkan pesan. Tanpa ini, kalau halaman di-refresh ulang, form akan tersubmit lagi.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — 3 Langkah Alur Notifikasi</span>
+                </div>
+                <pre><span class="cm">// ① LANGKAH 1: Setelah berhasil, redirect dengan parameter notif</span>
+<span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"INSERT INTO tasks ..."</span>);
+<span class="fn">header</span>(<span class="str">'location:index.php?notif=added'</span>);   <span class="cm">// URL: ...?notif=added</span>
+<span class="fn">exit</span>();
+
+<span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"DELETE FROM tasks WHERE id=$id"</span>);
+<span class="fn">header</span>(<span class="str">'location:index.php?notif=deleted'</span>); <span class="cm">// URL: ...?notif=deleted</span>
+<span class="fn">exit</span>();
+
+<span class="cm">// ② LANGKAH 2: Baca parameter URL (halaman sudah reload bersih)</span>
+<span class="var">$notif</span> = <span class="var">$_GET</span>[<span class="str">'notif'</span>] <span class="op">??</span> <span class="str">''</span>;
+<span class="cm">// ??: kalau 'notif' tidak ada di URL → pakai string kosong</span>
+
+<span class="cm">// ③ LANGKAH 3: Cocokkan nilai notif → tampilkan pesan</span>
+<span class="kw">if</span> (<span class="var">$notif</span> == <span class="str">'added'</span>)
+    <span class="var">$msg</span> = <span class="fn">alert</span>(<span class="str">'success'</span>, <span class="str">'circle-check'</span>, <span class="str">'Tugas berhasil ditambahkan.'</span>);
+<span class="kw">if</span> (<span class="var">$notif</span> == <span class="str">'deleted'</span>)
+    <span class="var">$msg</span> = <span class="fn">alert</span>(<span class="str">'warning'</span>, <span class="str">'trash-can'</span>, <span class="str">'Tugas berhasil dihapus.'</span>);
+
+<span class="cm">// ④ LANGKAH 4: Cetak $msg di HTML</span>
+<span class="cm">&lt;?= $msg ?&gt;</span></pre>
+              </div>
+              <table class="info-tbl">
+                <tr><th>Kode</th><th>Fungsinya</th></tr>
+                <tr><td>$_GET['notif'] ?? ''</td><td>Ambil nilai ?notif dari URL. Null coalescing: kalau tidak ada → string kosong (tidak error)</td></tr>
+                <tr><td>?? vs isset()</td><td>$_GET['x'] ?? '' lebih ringkas dari isset($_GET['x']) ? $_GET['x'] : '' — hasilnya sama</td></tr>
+                <tr><td>alert('success', 'circle-check', '...')</td><td>Panggil fungsi helper dari Topik 08 — hasilkan HTML alert hijau</td></tr>
+                <tr><td>alert('warning', 'trash-can', '...')</td><td>Panggil fungsi helper — hasilkan HTML alert kuning</td></tr>
+                <tr><td>&lt;?= $msg ?&gt;</td><td>Shorthand echo. Cetak isi HTML dari variabel $msg ke halaman</td></tr>
+              </table>
+              <div class="callout warn"><span class="ico">⚠️</span>
+                <p><strong>Kenapa harus redirect dulu?</strong> Kalau kita langsung tampilkan notifikasi tanpa redirect, user yang refresh halaman akan memunculkan dialog "Kirim ulang form?". Pola redirect ini (disebut PRG: Post-Redirect-Get) mencegah hal itu.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">10</span>
+              <h3>Array Asosiatif Kolom Kanban — Struktur & foreach</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Semua konfigurasi kolom disimpan dalam <strong>satu array asosiatif</strong>. Ini prinsip DRY — daripada tulis 3 section HTML yang hampir sama, cukup satu <code>foreach</code>.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP</span>
+                </div>
+                <pre><span class="var">$columns</span> = [
+  <span class="str">'belum'</span>   =&gt; [<span class="str">'Belum Dikerjakan'</span>, <span class="str">'list-ul'</span>,     <span class="str">'text-secondary'</span>, <span class="str">'bg-white text-dark'</span>,    <span class="str">''</span>],
+  <span class="str">'proses'</span>  =&gt; [<span class="str">'Proses'</span>,          <span class="str">'spinner'</span>,      <span class="str">'text-primary'</span>,   <span class="str">'bg-white text-primary'</span>, <span class="str">'#e3f2fd'</span>],
+  <span class="str">'selesai'</span> =&gt; [<span class="str">'Selesai'</span>,         <span class="str">'circle-check'</span>, <span class="str">'text-success'</span>,   <span class="str">'bg-white text-success'</span>, <span class="str">'#e8f5e9'</span>]
+];
+<span class="cm">//  key        [0]judul          [1]icon         [2]warna-judul    [3]warna-badge         [4]bg-kolom</span>
+
+<span class="kw">foreach</span> (<span class="var">$columns</span> <span class="kw">as</span> <span class="var">$slug</span> =&gt; <span class="var">$meta</span>):
+  <span class="cm">// $slug = 'belum' / 'proses' / 'selesai'</span>
+  <span class="cm">// $meta = array berisi konfigurasi kolom itu</span>
+  <span class="var">$filtered_tasks</span> = <span class="fn">array_filter</span>(<span class="var">$tasks</span>,
+    <span class="fn">fn</span>(<span class="var">$t</span>) =&gt; <span class="fn">strtolower</span>(<span class="var">$t</span>[<span class="str">'status'</span>]) == <span class="var">$slug</span>
+  );
+<span class="kw">endforeach</span>;</pre>
+              </div>
+              <table class="info-tbl">
+                <tr><th>Index $meta</th><th>Nilainya (contoh kolom 'belum')</th><th>Dipakai untuk</th></tr>
+                <tr><td>$meta[0]</td><td>'Belum Dikerjakan'</td><td>Judul yang tampil di header kolom</td></tr>
+                <tr><td>$meta[1]</td><td>'list-ul'</td><td>Nama icon Font Awesome: fa-list-ul</td></tr>
+                <tr><td>$meta[2]</td><td>'text-secondary'</td><td>Class Bootstrap untuk warna teks judul kolom</td></tr>
+                <tr><td>$meta[3]</td><td>'bg-white text-dark'</td><td>Class Bootstrap untuk badge jumlah tugas</td></tr>
+                <tr><td>$meta[4]</td><td>'' (kosong = putih)</td><td>Warna hex background kolom via inline style. Kosong = #fff</td></tr>
+              </table>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>foreach pakai titik dua (:) bukan kurung kurawal?</strong> Ini <em>alternative syntax</em> PHP, lebih rapi saat ada campuran PHP + HTML. <code>foreach(...): ... endforeach;</code> vs <code>foreach(...) { ... }</code> — keduanya valid tapi yang titik dua lebih mudah dibaca di template HTML.</p>
+              </div>
+              <div class="callout tip"><span class="ico">🎯</span>
+                <p><strong>Array asosiatif</strong> (key → value) berbeda dari array biasa (0,1,2,3). Key bisa berupa string: <code>$columns['belum']</code> lebih deskriptif dari <code>$columns[0]</code>. Di foreach, kita gunakan <code>$slug =&gt; $meta</code> untuk dapat key dan value sekaligus.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 11 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num">11</span>
+              <h3>Render Kartu Tugas — htmlspecialchars, date(), data-id</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Setiap kartu dicetak menggunakan data dari database. Ada 3 hal penting: <strong>keamanan XSS</strong>, <strong>format tanggal</strong>, dan <strong>atribut data-* untuk JavaScript</strong>.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — Logika Sebelum Render</span>
+                </div>
+                <pre><span class="kw">foreach</span> (<span class="var">$filtered_tasks</span> <span class="kw">as</span> <span class="var">$item</span>):
+  <span class="cm">// Tentukan class warna badge prioritas (ternary bersarang)</span>
+  <span class="var">$priority_class</span> = <span class="var">$item</span>[<span class="str">'priority'</span>] == <span class="str">'High'</span>
+    ? <span class="str">'danger'</span>    <span class="cm">// High → merah</span>
+    : (<span class="var">$item</span>[<span class="str">'priority'</span>] == <span class="str">'Medium'</span>
+        ? <span class="str">'warning'</span>   <span class="cm">// Medium → kuning</span>
+        : <span class="str">'success'</span>); <span class="cm">// Low → hijau</span>
+
+  <span class="cm">// Variabel boolean: apakah kartu ini di kolom selesai?</span>
+  <span class="var">$is_finished</span> = (<span class="var">$slug</span> == <span class="str">'selesai'</span>); <span class="cm">// true atau false</span>
+<span class="kw">endforeach</span>;</pre>
+              </div>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP dalam HTML — 5 Teknik Penting</span>
+                </div>
+                <pre><span class="cm">&lt;!-- ① Atribut draggable + data-id untuk JavaScript --&gt;</span>
+&lt;div <span class="kw">draggable</span>=<span class="str">"true"</span> <span class="kw">data-id</span>=<span class="str">"&lt;?= $item['id'] ?&gt;"</span>&gt;
+
+<span class="cm">&lt;!-- ② Style + class kondisional berdasarkan $is_finished --&gt;</span>
+&lt;div class=<span class="str">"card &lt;?= $is_finished ? 'text-muted' : '' ?&gt;"</span>
+     style=<span class="str">"&lt;?= $is_finished ? 'opacity:0.75;' : '' ?&gt;"</span>&gt;
+
+<span class="cm">&lt;!-- ③ Badge prioritas — class warna dari $priority_class --&gt;</span>
+&lt;span class=<span class="str">"badge text-bg-&lt;?= $priority_class ?&gt;"</span>&gt;&lt;?= $item['priority'] ?&gt;&lt;/span&gt;
+
+<span class="cm">&lt;!-- ④ XSS Protection — htmlspecialchars wajib untuk output user input --&gt;</span>
+&lt;p class=<span class="str">"card-text &lt;?= $is_finished ? 'text-decoration-line-through' : 'text-dark' ?&gt;"</span>&gt;
+  &lt;?= <span class="fn">htmlspecialchars</span>(<span class="var">$item</span>[<span class="str">'task'</span>]) ?&gt;
+&lt;/p&gt;
+
+<span class="cm">&lt;!-- ⑤ Format tanggal: dari '2026-04-16' → '16 Apr 2026' --&gt;</span>
+&lt;?= <span class="fn">date</span>(<span class="str">'d M Y'</span>, <span class="fn">strtotime</span>(<span class="var">$item</span>[<span class="str">'tanggal'</span>])) ?&gt;</pre>
+              </div>
+              <table class="info-tbl">
+                <tr><th>Kode</th><th>Fungsinya</th></tr>
+                <tr><td>draggable="true"</td><td>Atribut HTML5 — izinkan browser untuk drag elemen ini. Wajib ada agar drag-drop bisa berjalan</td></tr>
+                <tr><td>data-id="&lt;?= $item['id'] ?&gt;"</td><td>Simpan ID tugas dari database ke dalam HTML. JavaScript baca ini saat dragend untuk tahu ID yang harus diupdate</td></tr>
+                <tr><td>htmlspecialchars($item['task'])</td><td>Ubah &lt; &gt; &amp; " dari input user menjadi entitas HTML yang aman. Mencegah serangan XSS</td></tr>
+                <tr><td>strtotime($item['tanggal'])</td><td>Ubah string tanggal MySQL ('2026-04-16') menjadi Unix timestamp — angka detik sejak 1 Jan 1970</td></tr>
+                <tr><td>date('d M Y', timestamp)</td><td>Format timestamp: d=tanggal, M=bulan singkat (Apr), Y=tahun 4 digit. Hasil: '16 Apr 2026'</td></tr>
+                <tr><td>$is_finished ? 'opacity:0.75' : ''</td><td>Inline ternary: kalau selesai → set opacity 75%, kalau belum → tidak ada style tambahan</td></tr>
+              </table>
+              <div class="callout warn"><span class="ico">🛡️</span>
+                <p><strong>XSS Attack (Cross-Site Scripting):</strong> Kalau user input <code>&lt;script&gt;alert('hacked')&lt;/script&gt;</code> sebagai nama tugas, tanpa htmlspecialchars() script itu akan <em>dieksekusi browser</em>. htmlspecialchars() mengubah karakter berbahaya menjadi teks biasa: <code>&amp;lt;script&amp;gt;</code> yang aman.</p>
+              </div>
+              <div class="callout tip"><span class="ico">🔗</span>
+                <p><strong>Hubungan data-id dengan JavaScript:</strong> PHP mencetak <code>data-id="5"</code> di HTML. Saat kartu di-drag, JS baca dengan <code>draggable.getAttribute('data-id')</code> → dapat angka 5 → kirim ke PHP lewat fetch untuk UPDATE database.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── JS ── -->
+      <div class="view" id="view-js">
+        <div class="content-wrap">
+          <div class="page-header">
+            <div class="page-badge js">⚡ JavaScript</div>
+            <h2>JavaScript & AJAX</h2>
+            <p>JavaScript berjalan di browser — membuat halaman interaktif tanpa reload.</p>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">01</span>
+              <h3>querySelector & forEach</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">JS</span>
+                </div>
+                <pre><span class="kw">const</span> <span class="var">draggables</span> = <span class="var">document</span>.<span class="fn">querySelectorAll</span>(<span class="str">'.draggable'</span>);
+<span class="kw">const</span> <span class="var">droppables</span> = <span class="var">document</span>.<span class="fn">querySelectorAll</span>(<span class="str">'.droppable'</span>);
+
+<span class="var">draggables</span>.<span class="fn">forEach</span>(<span class="var">draggable</span> => {
+  <span class="cm">// lakukan sesuatu untuk setiap kartu</span>
+});</pre>
+              </div>
+              <table class="info-tbl js-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>const</td>
+                  <td>Deklarasi variabel yang nilainya tidak bisa diubah</td>
+                </tr>
+                <tr>
+                  <td>querySelectorAll('.cls')</td>
+                  <td>Ambil SEMUA elemen dengan class itu (NodeList)</td>
+                </tr>
+                <tr>
+                  <td>querySelector('.cls')</td>
+                  <td>Ambil SATU elemen pertama yang cocok</td>
+                </tr>
+                <tr>
+                  <td>.forEach(item => {})</td>
+                  <td>Loop setiap elemen. item = elemen saat ini</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">02</span>
+              <h3>Event Listener & classList</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">JS</span>
+                </div>
+                <pre><span class="var">draggable</span>.<span class="fn">addEventListener</span>(<span class="str">'dragstart'</span>, () => {
+  <span class="var">draggable</span>.<span class="var">classList</span>.<span class="fn">add</span>(<span class="str">'dragging'</span>);    <span class="cm">// tambah class CSS</span>
+});
+
+<span class="var">draggable</span>.<span class="fn">addEventListener</span>(<span class="str">'dragend'</span>, () => {
+  <span class="var">draggable</span>.<span class="var">classList</span>.<span class="fn">remove</span>(<span class="str">'dragging'</span>); <span class="cm">// hapus class CSS</span>
+});</pre>
+              </div>
+              <table class="info-tbl js-tbl">
+                <tr>
+                  <th>Event</th>
+                  <th>Kapan terjadi</th>
+                </tr>
+                <tr>
+                  <td>dragstart</td>
+                  <td>User mulai menarik elemen</td>
+                </tr>
+                <tr>
+                  <td>dragend</td>
+                  <td>User melepas elemen (di mana saja)</td>
+                </tr>
+                <tr>
+                  <td>dragover</td>
+                  <td>Elemen melayang di atas zona drop</td>
+                </tr>
+                <tr>
+                  <td>dragleave</td>
+                  <td>Elemen meninggalkan zona drop</td>
+                </tr>
+                <tr>
+                  <td>drop</td>
+                  <td>Elemen dilepas tepat di zona drop</td>
+                </tr>
+              </table>
+              <div class="callout tip"><span class="ico">🎨</span>
+                <p><strong>classList.add/remove</strong> adalah jembatan JS ↔ CSS. JS tambah class → CSS aktifkan efek
+                  visual. JS hapus class → efek hilang. CSS sendiri tidak bisa "memutuskan" kapan aktif.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">03</span>
+              <h3>preventDefault & appendChild</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">JS</span>
+                </div>
+                <pre><span class="var">droppable</span>.<span class="fn">addEventListener</span>(<span class="str">'dragover'</span>, <span class="var">e</span> => {
+  <span class="var">e</span>.<span class="fn">preventDefault</span>(); <span class="cm">// ← WAJIB! Izinkan drop</span>
+  <span class="var">droppable</span>.<span class="var">classList</span>.<span class="fn">add</span>(<span class="str">'drag-over'</span>);
+
+  <span class="kw">const</span> <span class="var">item</span> = <span class="var">document</span>.<span class="fn">querySelector</span>(<span class="str">'.dragging'</span>);
+  <span class="kw">if</span> (<span class="var">item</span>) <span class="var">droppable</span>.<span class="fn">appendChild</span>(<span class="var">item</span>);
+});</pre>
+              </div>
+              <div class="callout warn"><span class="ico">⚠️</span>
+                <p><strong>e.preventDefault() WAJIB di dragover!</strong> Browser secara default melarang drop di
+                  sembarang tempat. Tanpa ini, event drop tidak akan pernah terjadi sama sekali.</p>
+              </div>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>appendChild(item)</strong> memindahkan elemen HTML yang sedang ditarik menjadi anak dari
+                  kolom tujuan. Inilah yang membuat kartu "pindah kolom" secara visual di layar.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">04</span>
+              <h3>getAttribute & data-* Attribute</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">HTML + JS</span>
+                </div>
+                <pre><span class="cm">&lt;!-- HTML simpan data di atribut data-* --&gt;</span>
+&lt;div <span class="kw">class</span>=<span class="str">"card draggable"</span> <span class="kw">draggable</span>=<span class="str">"true"</span> <span class="kw">data-id</span>=<span class="str">"5"</span>&gt;
+&lt;div <span class="kw">class</span>=<span class="str">"droppable"</span> <span class="kw">data-status</span>=<span class="str">"proses"</span>&gt;
+
+<span class="cm">// JS baca atributnya</span>
+<span class="kw">const</span> <span class="var">id</span>        = <span class="var">draggable</span>.<span class="fn">getAttribute</span>(<span class="str">'data-id'</span>);         <span class="cm">// "5"</span>
+<span class="kw">const</span> <span class="var">newStatus</span> = <span class="var">draggable</span>.<span class="var">parentElement</span>.<span class="fn">getAttribute</span>(<span class="str">'data-status'</span>); <span class="cm">// "proses"</span></pre>
+              </div>
+              <table class="info-tbl js-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>getAttribute('data-id')</td>
+                  <td>Baca nilai atribut data-id dari elemen HTML</td>
+                </tr>
+                <tr>
+                  <td>draggable.parentElement</td>
+                  <td>Akses elemen INDUK kartu — yaitu kolom tempat mendarat</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">05</span>
+              <h3>Fetch API — AJAX tanpa Reload</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Fetch adalah cara JS <strong>kirim data ke server tanpa reload halaman</strong>. Inti dari fitur drag &
+                drop yang menyimpan ke database.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">JS</span>
+                </div>
+                <pre><span class="kw">const</span> <span class="var">formData</span> = <span class="kw">new</span> <span class="fn">FormData</span>();
+<span class="var">formData</span>.<span class="fn">append</span>(<span class="str">'action'</span>, <span class="str">'update_status'</span>);
+<span class="var">formData</span>.<span class="fn">append</span>(<span class="str">'id'</span>, <span class="var">id</span>);
+<span class="var">formData</span>.<span class="fn">append</span>(<span class="str">'status'</span>, <span class="var">newStatus</span>);
+
+<span class="fn">fetch</span>(<span class="str">'index.php'</span>, { <span class="var">method</span>: <span class="str">'POST'</span>, <span class="var">body</span>: <span class="var">formData</span> })
+  .<span class="fn">then</span>(<span class="var">res</span> => <span class="var">res</span>.<span class="fn">text</span>())
+  .<span class="fn">then</span>(() => { <span class="cm">/* update tampilan */</span> })
+  .<span class="fn">catch</span>(<span class="var">err</span> => <span class="var">console</span>.<span class="fn">error</span>(<span class="str">'Error:'</span>, <span class="var">err</span>));</pre>
+              </div>
+              <table class="info-tbl js-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>new FormData()</td>
+                  <td>Buat paket data kosong (seperti mengisi form HTML)</td>
+                </tr>
+                <tr>
+                  <td>formData.append(key, val)</td>
+                  <td>Isi paket data dengan satu field</td>
+                </tr>
+                <tr>
+                  <td>fetch(url, { method, body })</td>
+                  <td>Kirim request ke server</td>
+                </tr>
+                <tr>
+                  <td>.then()</td>
+                  <td>"Kalau berhasil, lakukan ini" — callback sukses</td>
+                </tr>
+                <tr>
+                  <td>.catch()</td>
+                  <td>Tangkap error kalau request gagal</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">06</span>
+              <h3>Update Tampilan Pasca Fetch</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">JS</span>
+                </div>
+                <pre>.<span class="fn">then</span>(() => {
+  <span class="kw">const</span> <span class="var">textEl</span> = <span class="var">draggable</span>.<span class="fn">querySelector</span>(<span class="str">'.card-text'</span>);
+  <span class="kw">if</span> (<span class="var">newStatus</span> === <span class="str">'selesai'</span>) {
+    <span class="var">draggable</span>.<span class="var">style</span>.<span class="var">opacity</span> = <span class="str">'0.75'</span>;
+    <span class="var">draggable</span>.<span class="var">classList</span>.<span class="fn">add</span>(<span class="str">'text-muted'</span>);
+    <span class="var">textEl</span>.<span class="var">classList</span>.<span class="fn">add</span>(<span class="str">'text-decoration-line-through'</span>);
+  } <span class="kw">else</span> {
+    <span class="var">draggable</span>.<span class="var">style</span>.<span class="var">opacity</span> = <span class="str">'1'</span>;
+    <span class="var">draggable</span>.<span class="var">classList</span>.<span class="fn">remove</span>(<span class="str">'text-muted'</span>);
+    <span class="var">textEl</span>.<span class="var">classList</span>.<span class="fn">remove</span>(<span class="str">'text-decoration-line-through'</span>);
+  }
+})</pre>
+              </div>
+              <div class="callout tip"><span class="ico">✅</span>
+                <p>Setelah PHP berhasil update database, JS langsung update tampilan kartu: opacity 0.75, teks dicoret,
+                  warna abu-abu — <strong>semua tanpa reload halaman</strong>.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">07</span>
+              <h3>Update Badge Jumlah Tugas</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">JS</span>
+                </div>
+                <pre><span class="kw">function</span> <span class="fn">updateColumnCounts</span>() {
+  <span class="var">document</span>.<span class="fn">querySelectorAll</span>(<span class="str">'.kanban-column'</span>).<span class="fn">forEach</span>(<span class="var">col</span> => {
+    <span class="kw">const</span> <span class="var">count</span> = <span class="var">col</span>.<span class="fn">querySelectorAll</span>(<span class="str">'.draggable'</span>).<span class="var">length</span>;
+    <span class="kw">const</span> <span class="var">badge</span> = <span class="var">col</span>.<span class="fn">querySelector</span>(<span class="str">'span.badge'</span>);
+    <span class="kw">if</span> (<span class="var">badge</span>) <span class="var">badge</span>.<span class="var">innerText</span> = <span class="var">count</span>;
+  });
+}</pre>
+              </div>
+              <table class="info-tbl js-tbl">
+                <tr>
+                  <th>Kode</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>.length</td>
+                  <td>Jumlah elemen dalam NodeList</td>
+                </tr>
+                <tr>
+                  <td>badge.innerText = count</td>
+                  <td>Ganti teks badge dengan angka baru secara langsung</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CSS ── -->
+      <div class="view" id="view-css">
+        <div class="content-wrap">
+          <div class="page-header">
+            <div class="page-badge css">🎨 CSS Kustom</div>
+            <h2>CSS Kustom</h2>
+            <p>Untuk hal yang tidak bisa atau sulit dilakukan Bootstrap.</p>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">01</span>
+              <h3>Kolom Kanban — Lebar Dikunci</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">CSS</span>
+                </div>
+                <pre><span class="fn">.kanban-column</span> {
+  background-color: <span class="str">#ebecf0</span>;
+  <span class="kw">min-width</span>: <span class="num">320px</span>;
+  <span class="kw">max-width</span>: <span class="num">320px</span>;
+}</pre>
+              </div>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>Kenapa min dan max sama?</strong> Mengunci lebar tepat 320px — tidak mengecil atau membesar.
+                  Bootstrap pakai persentase yang tidak bisa menjamin ukuran tetap di semua layar.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">02</span>
+              <h3>Cursor & Transition</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">CSS</span>
+                </div>
+                <pre><span class="fn">.card.draggable</span> {
+  <span class="kw">cursor</span>: grab;  <span class="cm">/* tangan terbuka = bisa di-drag */</span>
+  <span class="kw">transition</span>: box-shadow <span class="num">0.2s</span>, transform <span class="num">0.1s</span>;
+}
+<span class="fn">.card.draggable:active</span> {
+  <span class="kw">cursor</span>: grabbing;  <span class="cm">/* tangan mengepal = sedang diklik */</span>
+}</pre>
+              </div>
+              <table class="info-tbl css-tbl">
+                <tr>
+                  <th>Property</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>cursor: grab</td>
+                  <td>Ikon tangan terbuka — sinyal "bisa di-drag"</td>
+                </tr>
+                <tr>
+                  <td>cursor: grabbing</td>
+                  <td>Ikon tangan mengepal — saat sedang dipegang</td>
+                </tr>
+                <tr>
+                  <td>transition: prop duration</td>
+                  <td>Perubahan property berlangsung bertahap (animasi)</td>
+                </tr>
+                <tr>
+                  <td>:active</td>
+                  <td>Style aktif saat elemen sedang diklik/ditahan</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">03</span>
+              <h3>Efek Saat Ditarik (.dragging)</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Class <code>.dragging</code> <strong>ditambahkan JavaScript</strong> saat dragstart dan dihapus saat
+                dragend.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">CSS</span>
+                </div>
+                <pre><span class="fn">.card.draggable.dragging</span> {
+  <span class="kw">opacity</span>: <span class="num">0.5</span>;                           <span class="cm">/* 50% transparan */</span>
+  <span class="kw">box-shadow</span>: <span class="num">0</span> <span class="num">5px</span> <span class="num">15px</span> rgba(<span class="num">0,0,0,0.2</span>) !important;
+  <span class="kw">transform</span>: scale(<span class="num">1.02</span>);               <span class="cm">/* membesar 2% */</span>
+}</pre>
+              </div>
+              <table class="info-tbl css-tbl">
+                <tr>
+                  <th>Property</th>
+                  <th>Efeknya</th>
+                </tr>
+                <tr>
+                  <td>opacity: 0.5</td>
+                  <td>50% transparan — terlihat "mengambang"</td>
+                </tr>
+                <tr>
+                  <td>box-shadow: 0 5px 15px rgba()</td>
+                  <td>Bayangan kuat — terlihat terangkat dari permukaan</td>
+                </tr>
+                <tr>
+                  <td>rgba(0,0,0,0.2)</td>
+                  <td>Warna hitam dengan 20% transparansi</td>
+                </tr>
+                <tr>
+                  <td>transform: scale(1.02)</td>
+                  <td>Membesar 2% dari ukuran asli</td>
+                </tr>
+                <tr>
+                  <td>!important</td>
+                  <td>Paksa menang dari style lain yang bertentangan</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">04</span>
+              <h3>Drop Zone — .drag-over</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">CSS</span>
+                </div>
+                <pre><span class="fn">.droppable</span> {
+  <span class="kw">min-height</span>: <span class="num">100px</span>;            <span class="cm">/* tetap ada meski kosong */</span>
+  <span class="kw">transition</span>: background-color <span class="num">0.2s</span>;
+}
+<span class="fn">.droppable.drag-over</span> {
+  <span class="kw">background-color</span>: <span class="str">#dcdfe5</span> !important;  <span class="cm">/* sinyal bisa drop */</span>
+}</pre>
+              </div>
+              <div class="callout tip"><span class="ico">🎯</span>
+                <p><strong>min-height: 100px</strong> — Tanpa ini, kolom kosong akan "hilang" (tinggi 0) dan tidak bisa
+                  menerima kartu drag & drop.</p>
+              </div>
+              <div class="callout info"><span class="ico">🔗</span>
+                <p>Class <code>.drag-over</code> ditambah JS saat <code>dragover</code>, dihapus saat
+                  <code>dragleave</code> dan <code>drop</code>. Pola JS ↔ CSS yang sama seperti <code>.dragging</code>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BOOTSTRAP ── -->
+      <div class="view" id="view-bs">
+        <div class="content-wrap">
+          <div class="page-header">
+            <div class="page-badge bs">🅱️ Bootstrap 5</div>
+            <h2>Bootstrap 5</h2>
+            <p>Framework CSS siap pakai — tampilan bagus hanya dengan nama class.</p>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">01</span>
+              <h3>Sistem Spasi — Margin & Padding</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <p>Format singkat Bootstrap: <strong>[m/p][sisi]-[ukuran]</strong></p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">Bootstrap Class</span>
+                </div>
+                <pre>m = margin    p = padding
+t = top       b = bottom
+s = kiri      e = kanan
+x = kiri+kanan    y = atas+bawah
+
+0=0px  1=4px  2=8px  3=16px  4=24px  5=48px</pre>
+              </div>
+              <table class="info-tbl bs-tbl">
+                <tr>
+                  <th>Class</th>
+                  <th>Artinya</th>
+                </tr>
+                <tr>
+                  <td>mb-4</td>
+                  <td>margin-bottom 24px</td>
+                </tr>
+                <tr>
+                  <td>px-3</td>
+                  <td>padding kiri+kanan 16px</td>
+                </tr>
+                <tr>
+                  <td>mt-4</td>
+                  <td>margin-top 24px</td>
+                </tr>
+                <tr>
+                  <td>p-0</td>
+                  <td>padding 0 — hapus semua padding</td>
+                </tr>
+                <tr>
+                  <td>gap-4</td>
+                  <td>Jarak antar item flex 24px</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">02</span>
+              <h3>Flexbox Bootstrap</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">HTML</span>
+                </div>
+                <pre>&lt;div class=<span class="str">"d-flex justify-content-between align-items-center"</span>&gt;</pre>
+              </div>
+              <table class="info-tbl bs-tbl">
+                <tr>
+                  <th>Class</th>
+                  <th>Artinya</th>
+                </tr>
+                <tr>
+                  <td>d-flex</td>
+                  <td>Aktifkan Flexbox — item berjajar horizontal</td>
+                </tr>
+                <tr>
+                  <td>justify-content-between</td>
+                  <td>Item menyebar ke ujung kiri dan kanan</td>
+                </tr>
+                <tr>
+                  <td>justify-content-center</td>
+                  <td>Item di tengah secara horizontal</td>
+                </tr>
+                <tr>
+                  <td>align-items-center</td>
+                  <td>Item sejajar di tengah secara vertikal</td>
+                </tr>
+                <tr>
+                  <td>align-items-start</td>
+                  <td>Item rata atas</td>
+                </tr>
+                <tr>
+                  <td>flex-column</td>
+                  <td>Ubah arah flex menjadi vertikal</td>
+                </tr>
+                <tr>
+                  <td>flex-grow-1</td>
+                  <td>Ambil sisa ruang yang tersedia</td>
+                </tr>
+                <tr>
+                  <td>overflow-x-auto</td>
+                  <td>Scrollbar horizontal kalau konten melebihi lebar</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">03</span>
+              <h3>Modal (Popup) Bootstrap</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">HTML</span>
+                </div>
+                <pre><span class="cm">&lt;!-- Tombol Pemicu --&gt;</span>
+&lt;button <span class="kw">data-bs-toggle</span>=<span class="str">"modal"</span> <span class="kw">data-bs-target</span>=<span class="str">"#addTaskModal"</span>&gt;
+  Tambah Tugas
+&lt;/button&gt;
+
+<span class="cm">&lt;!-- Struktur Modal --&gt;</span>
+&lt;div class=<span class="str">"modal fade"</span> id=<span class="str">"addTaskModal"</span>&gt;
+  &lt;div class=<span class="str">"modal-dialog modal-dialog-centered"</span>&gt;
+    &lt;div class=<span class="str">"modal-content"</span>&gt;
+      &lt;div class=<span class="str">"modal-header"</span>&gt; ... &lt;/div&gt;
+      &lt;div class=<span class="str">"modal-body"</span>&gt;   ... &lt;/div&gt;
+      &lt;div class=<span class="str">"modal-footer"</span>&gt; ... &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+              </div>
+              <table class="info-tbl bs-tbl">
+                <tr>
+                  <th>Atribut / Class</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>data-bs-toggle="modal"</td>
+                  <td>Tandai tombol sebagai pemicu modal</td>
+                </tr>
+                <tr>
+                  <td>data-bs-target="#id"</td>
+                  <td>ID modal yang akan dibuka</td>
+                </tr>
+                <tr>
+                  <td>modal fade</td>
+                  <td>Komponen modal + animasi fade in/out</td>
+                </tr>
+                <tr>
+                  <td>modal-dialog-centered</td>
+                  <td>Modal muncul di tengah layar vertikal</td>
+                </tr>
+                <tr>
+                  <td>data-bs-dismiss="modal"</td>
+                  <td>Tombol close — menutup modal saat diklik</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">04</span>
+              <h3>Form Controls</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">HTML</span>
+                </div>
+                <pre>&lt;input type=<span class="str">"text"</span> class=<span class="str">"form-control form-control-lg bg-light"</span>
+       name=<span class="str">"task_input"</span> required&gt;
+
+&lt;select name=<span class="str">"priority"</span> class=<span class="str">"form-select bg-light"</span> required&gt;
+  &lt;option value=<span class="str">"High"</span>&gt;High&lt;/option&gt;
+&lt;/select&gt;</pre>
+              </div>
+              <table class="info-tbl bs-tbl">
+                <tr>
+                  <th>Class / Atribut</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>form-control</td>
+                  <td>Styling input & textarea — border, padding, radius</td>
+                </tr>
+                <tr>
+                  <td>form-control-lg</td>
+                  <td>Input lebih besar dari ukuran default</td>
+                </tr>
+                <tr>
+                  <td>form-select</td>
+                  <td>Styling dropdown select</td>
+                </tr>
+                <tr>
+                  <td>bg-light</td>
+                  <td>Background abu-abu muda</td>
+                </tr>
+                <tr>
+                  <td>required</td>
+                  <td>Wajib diisi — form tidak bisa submit kalau kosong</td>
+                </tr>
+                <tr>
+                  <td>name="..."</td>
+                  <td>PHP ambil nilainya via $_POST['nama']</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">05</span>
+              <h3>Badge & Alert</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span
+                      class="code-dot"></span></div><span class="code-lang">HTML</span>
+                </div>
+                <pre><span class="cm">&lt;!-- Badge prioritas --&gt;</span>
+&lt;span class=<span class="str">"badge text-bg-danger"</span>&gt;High&lt;/span&gt;
+&lt;span class=<span class="str">"badge text-bg-warning"</span>&gt;Medium&lt;/span&gt;
+&lt;span class=<span class="str">"badge text-bg-success"</span>&gt;Low&lt;/span&gt;
+
+<span class="cm">&lt;!-- Alert notifikasi --&gt;</span>
+&lt;div class=<span class="str">"alert alert-success alert-dismissible fade show"</span>&gt;
+  Tugas berhasil ditambahkan.
+  &lt;button class=<span class="str">"btn-close"</span> data-bs-dismiss=<span class="str">"alert"</span>&gt;&lt;/button&gt;
+&lt;/div&gt;</pre>
+              </div>
+              <table class="info-tbl bs-tbl">
+                <tr>
+                  <th>Class</th>
+                  <th>Artinya</th>
+                </tr>
+                <tr>
+                  <td>text-bg-danger/warning/success</td>
+                  <td>Warna badge otomatis — teks + background sekaligus</td>
+                </tr>
+                <tr>
+                  <td>alert-success/warning/danger</td>
+                  <td>Warna kotak alert</td>
+                </tr>
+                <tr>
+                  <td>alert-dismissible</td>
+                  <td>Tambah ruang untuk tombol close di kanan</td>
+                </tr>
+                <tr>
+                  <td>fade show</td>
+                  <td>Animasi fade saat alert muncul/menghilang</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head"><span class="acc-num">06</span>
+              <h3>Class Teks & Tampilan Umum</h3><span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <table class="info-tbl bs-tbl">
+                <tr>
+                  <th>Class</th>
+                  <th>Fungsinya</th>
+                </tr>
+                <tr>
+                  <td>fw-semibold / fw-bold</td>
+                  <td>Font weight semi-bold / bold</td>
+                </tr>
+                <tr>
+                  <td>fs-5 / fs-6</td>
+                  <td>Ukuran font (5 lebih besar dari 6)</td>
+                </tr>
+                <tr>
+                  <td>text-muted</td>
+                  <td>Warna abu-abu pudar</td>
+                </tr>
+                <tr>
+                  <td>text-secondary</td>
+                  <td>Warna abu-abu medium</td>
+                </tr>
+                <tr>
+                  <td>text-decoration-line-through</td>
+                  <td>Teks dicoret (strikethrough)</td>
+                </tr>
+                <tr>
+                  <td>shadow-sm</td>
+                  <td>Bayangan kecil di bawah elemen</td>
+                </tr>
+                <tr>
+                  <td>rounded-pill</td>
+                  <td>Tepi melengkung sempurna seperti kapsul</td>
+                </tr>
+                <tr>
+                  <td>border-0</td>
+                  <td>Hapus border</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ALUR KODE ── -->
+      <div class="view" id="view-alur">
+        <div class="content-wrap" style="max-width:860px;">
+          <div class="page-header">
+            <div class="page-badge" style="background:#fdf4ff; color:#9333ea; border:1px solid #e9d5ff;">🔗 Hubungan Kode</div>
+            <h2>Bagaimana Semua Saling Terhubung</h2>
+            <p>PHP, JavaScript, CSS, dan Bootstrap bukan berdiri sendiri — mereka bekerja sama membentuk satu aplikasi utuh.</p>
+          </div>
+
+          <!-- Diagram alur -->
+          <div style="background:#1e1812; border-radius:var(--radius); padding:28px 32px; margin-bottom:24px; overflow-x:auto;">
+            <pre style="background:transparent; padding:0; color:#e8d5b7; font-size:12.5px; line-height:2.2; font-family:'Fira Code',monospace;">&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     Kirim Form (POST)      &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;   Browser   &#x2502; &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x25BA; &#x2502;  PHP Server  &#x2502;
+&#x2502;   (HTML)    &#x2502; &#x25C4;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; Kirim HTML &#x2500;&#x2500;&#x2500; &#x2502;  (index.php) &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;                             &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2507;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+       &#x2502;                                            &#x2502;
+       &#x2502; JS tangkap event                   SELECT / INSERT /
+       &#x2502; drag, click, dll.                  UPDATE / DELETE
+       &#x2502;                                            &#x2502;
+       &#x25BC;                                            &#x25BC;
+&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;   fetch() tanpa reload   &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502; JavaScript  &#x2502; &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x25BA; &#x2502;   MySQL DB   &#x2502;
+&#x2502; (script.js) &#x2502; &#x25C4;&#x2500;&#x2500;&#x2500; Respons singkat &#x2500;&#x2500;&#x2500;&#x2500;&#x2500; &#x2502;  (lat_todo)  &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;                             &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+       &#x2502;
+       &#x2502; classList.add / remove
+       &#x25BC;
+&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;  CSS Kustom  &#x2502; &#x2192; Visual berubah saat class ditambah/dihapus JS
+&#x2502;  Bootstrap   &#x2502; &#x2192; Tampilan awal dan komponen dari nama class HTML
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</pre>
+          </div>
+
+          <!-- Step by step -->
+          <h3 style="font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:var(--ink); margin-bottom:16px;">⛓️ Alur Lengkap: Drag Kartu ke Kolom Lain</h3>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--ink); color:var(--cream); display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">1</div>
+              <div><strong style="color:var(--ink);">HTML merender kartu</strong><br><span style="color:var(--ink3); font-size:13.5px;">PHP mencetak <code>draggable="true"</code> dan <code>data-id="5"</code> pada setiap kartu tugas.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--js); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">2</div>
+              <div><strong style="color:var(--ink);">JavaScript pasang event listener dragstart</strong><br><span style="color:var(--ink3); font-size:13.5px;">Saat kartu mulai ditarik, JS tambah class <code>.dragging</code> via classList.add().</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--css); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">3</div>
+              <div><strong style="color:var(--ink);">CSS bereaksi ke class .dragging</strong><br><span style="color:var(--ink3); font-size:13.5px;">Kartu jadi transparan (opacity 0.5) dan sedikit membesar (scale 1.02) — sinyal visual sedang ditarik.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--js); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">4</div>
+              <div><strong style="color:var(--ink);">JavaScript event dragover — e.preventDefault()</strong><br><span style="color:var(--ink3); font-size:13.5px;">Browser secara default melarang drop. preventDefault() membatalkan aturan itu. Plus tambah class <code>.drag-over</code> ke kolom tujuan.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--css); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">5</div>
+              <div><strong style="color:var(--ink);">CSS bereaksi ke class .drag-over</strong><br><span style="color:var(--ink3); font-size:13.5px;">Background kolom tujuan berubah warna — sinyal "kamu bisa drop di sini".</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--js); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">6</div>
+              <div><strong style="color:var(--ink);">JavaScript — appendChild() pindahkan kartu</strong><br><span style="color:var(--ink3); font-size:13.5px;">Kartu jadi anak dari kolom tujuan. Secara visual kartu sudah berpindah kolom di layar.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--js); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">7</div>
+              <div><strong style="color:var(--ink);">JavaScript event dragend — bersih + ambil data</strong><br><span style="color:var(--ink3); font-size:13.5px;">Remove class .dragging. Ambil <code>data-id</code> dari kartu dan <code>data-status</code> dari kolom tujuan.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:var(--accent-bg); border:1.5px solid #fed7aa; border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">8</div>
+              <div><strong style="color:var(--ink);">JavaScript fetch() — kirim data ke PHP tanpa reload</strong><br><span style="color:var(--ink3); font-size:13.5px;">FormData berisi action='update_status', id, dan status baru dikirim via POST ke index.php.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:var(--php-bg); border:1.5px solid var(--php-bdr); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--php); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">9</div>
+              <div><strong style="color:var(--ink);">PHP menerima → UPDATE database → exit()</strong><br><span style="color:var(--ink3); font-size:13.5px;">PHP cek action='update_status', jalankan UPDATE tasks SET status='...', lalu exit() agar tidak kirim HTML balik.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--js); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">10</div>
+              <div><strong style="color:var(--ink);">JavaScript .then() — update tampilan kartu</strong><br><span style="color:var(--ink3); font-size:13.5px;">Kalau status='selesai': opacity 0.75 + text-muted + text-decoration-line-through. Semua tanpa reload.</span></div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:14px; background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px 18px;">
+              <div style="min-width:32px; height:32px; border-radius:50%; background:var(--ink); color:var(--cream); display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:12px; font-weight:700; flex-shrink:0;">11</div>
+              <div><strong style="color:var(--ink);">JavaScript updateColumnCounts() — update badge angka</strong><br><span style="color:var(--ink3); font-size:13.5px;">Loop semua kolom, hitung jumlah .draggable di dalamnya, update teks badge dengan angka baru.</span></div>
+            </div>
+
+          </div>
+
+          <!-- Peran setiap teknologi -->
+          <h3 style="font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:var(--ink); margin-bottom:16px;">🧩 Peran Setiap Teknologi</h3>
+          <table class="info-tbl">
+            <tr><th>Teknologi</th><th>File</th><th>Tugasnya</th></tr>
+            <tr>
+              <td style="color:var(--php); background:rgba(139,92,246,0.04);">PHP</td>
+              <td>index.php</td>
+              <td>Berjalan di SERVER. Koneksi database, proses form, query SQL, cetak HTML dinamis. User tidak bisa lihat kode PHP-nya.</td>
+            </tr>
+            <tr>
+              <td style="color:var(--js); background:rgba(217,119,6,0.04);">JavaScript</td>
+              <td>script.js</td>
+              <td>Berjalan di BROWSER. Tangkap event drag/drop, manipulasi DOM, kirim data ke PHP via fetch() tanpa reload halaman.</td>
+            </tr>
+            <tr>
+              <td style="color:var(--css); background:rgba(5,150,105,0.04);">CSS Kustom</td>
+              <td>style.css</td>
+              <td>Aturan tampilan spesifik yang tidak bisa dilakukan Bootstrap: lebar kolom tetap, efek drag, drop zone visual.</td>
+            </tr>
+            <tr>
+              <td style="color:var(--bs); background:rgba(37,99,235,0.04);">Bootstrap 5</td>
+              <td>CDN (online)</td>
+              <td>Framework CSS siap pakai. Tampilan card, button, modal, badge, alert — semua dari nama class HTML saja.</td>
+            </tr>
+            <tr>
+              <td style="color:#0284c7; background:#e0f2fe;">MySQL DB</td>
+              <td>lat_todo</td>
+              <td>Menyimpan data tugas secara permanen. PHP lakukan SELECT/INSERT/UPDATE/DELETE. JavaScript tidak langsung ke DB.</td>
+            </tr>
+          </table>
+
+          <div class="callout tip" style="margin-top:24px;"><span class="ico">🚀</span>
+            <p><strong>Inilah harmoni Web Programming:</strong> HTML = <em>raga</em> (struktur), CSS = <em>busana</em> (tampilan), JavaScript = <em>nyawa</em> (interaksi), PHP = <em>otak</em> (logika server), MySQL = <em>memori</em> (penyimpanan permanen).</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── README ── -->
+      <div class="view" id="view-readme">
+        <div class="content-wrap">
+          <div class="page-header">
+            <div class="page-badge readme" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;">📖
+              Dokumentasi</div>
+            <h2>Readme UKK</h2>
+            <p>Pratinjau langsung dari file <code>UKK/README.md</code>.</p>
+          </div>
+
+          <div id="readme-loading" style="text-align:center; padding: 40px; color: var(--muted); font-size: 14px;">
+            <i class="fa-solid fa-spinner fa-spin-pulse me-2"></i> Mengambil data Readme...
+          </div>
+
+          <div id="readme-content" style="display: none;"></div>
+
+        </div>
+      </div>
+
+      <!-- ── CHALLENGE ── -->
+      <div class="view" id="view-challenge">
+        <div class="content-wrap" style="max-width:810px;">
+          <div class="page-header">
+            <div class="page-badge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca;">🎯 Prediksi Soal</div>
+            <h2>Challenge dari Gurumu</h2>
+            <p>Pertanyaan &amp; skenario yang kemungkinan besar ditanyakan saat presentasi atau sidang UKK. Pahami jawabannya, bukan hanya hafalkan!</p>
+          </div>
+
+          <div class="callout warn"><span class="ico">⚠️</span>
+            <p>Ini <strong>prediksi</strong> berdasarkan topik UKK yang umum. Guru bisa menanyakan hal lain. Tetap pelajari semua materi, jangan hanya andalkan halaman ini!</p>
+          </div>
+
+          <!-- Challenge 1 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#fee2e2;color:#b91c1c;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">🔥 Paling Umum</span>
+              <h3>Jika tanggal sudah lewat, apakah status otomatis pindah ke Selesai?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Lihat — tugas ini tanggalnya kemarin tapi statusnya masih 'Belum Dikerjakan'. Apa yang terjadi di sistemmu? Apakah PHP otomatis memindahkannya ke Selesai?"</p>
+              </div>
+              <p><strong>Jawaban Benar: <span style="color:var(--danger);">TIDAK.</span></strong> Status <strong>tidak pernah berubah otomatis</strong> di kode ini. Status hanya berubah saat user drag kartu secara manual. PHP tidak punya mekanisme auto-check saat halaman dibuka.</p>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>Kenapa tidak otomatis?</strong> PHP hanya berjalan saat ada HTTP request dari browser. Tidak ada background task, timer, atau cron job. Untuk auto-move, kamu perlu tambah logic PHP saat halaman dibuka.</p>
+              </div>
+              <p style="font-weight:600;color:var(--ink);margin-top:12px;">Solusi: Tambah deteksi overdue saat loop data</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — Tambah di dalam while loop (ambil data)</span>
+                </div>
+                <pre><span class="kw">while</span> (<span class="var">$row</span> = <span class="fn">mysqli_fetch_array</span>(<span class="var">$tasks_query</span>)) {
+    <span class="var">$row</span>[<span class="str">'status'</span>] = <span class="var">$row</span>[<span class="str">'status'</span>] ?: <span class="str">'belum'</span>;
+
+    <span class="cm">// TAMBAHAN: Deteksi dan auto-update ke 'terlambat' jika overdue</span>
+    <span class="kw">if</span> (<span class="var">$row</span>[<span class="str">'status'</span>] == <span class="str">'belum'</span>
+        && <span class="fn">strtotime</span>(<span class="var">$row</span>[<span class="str">'tanggal'</span>]) < <span class="fn">strtotime</span>(<span class="str">'today'</span>)) {
+
+        <span class="fn">mysqli_query</span>(<span class="var">$db</span>,
+            <span class="str">"UPDATE tasks SET status='terlambat' WHERE id={$row['id']}"</span>
+        );
+        <span class="var">$row</span>[<span class="str">'status'</span>] = <span class="str">'terlambat'</span>; <span class="cm">// Update array agar tampilan ikut berubah</span>
+    }
+
+    <span class="var">$tasks</span>[] = <span class="var">$row</span>;
+}</pre>
+              </div>
+              <div class="callout tip"><span class="ico">📌</span>
+                <p><strong>strtotime('today')</strong> menghasilkan Unix timestamp awal hari ini (00:00:00). Membandingkan dengan timestamp tanggal tugas: kalau tanggal tugas lebih kecil → sudah lewat. Kalau pakai 'selesai' bukan 'terlambat' juga bisa, tergantung kebutuhan aplikasi.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 2 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#fee2e2;color:#b91c1c;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">🔥 Paling Umum</span>
+              <h3>Coba ketik &lt;script&gt;alert('hacked')&lt;/script&gt; sebagai nama tugas!</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Sekarang coba ketikkan <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> di kolom nama tugas, lalu simpan. Apa yang terjadi di browsermu?"</p>
+              </div>
+              <p><strong>Jawaban:</strong> Di kode UKK ini — <span style="color:var(--success);font-weight:600;">AMAN</span>. Karena saat menampilkan tugas ada <code>htmlspecialchars()</code>. Tapi perhatikan: input tersimpan apa adanya ke database, yang berubah hanya saat DITAMPILKAN.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — Perbedaan Ada/Tanpa htmlspecialchars</span>
+                </div>
+                <pre><span class="cm">// Input user: &lt;script&gt;alert('hacked')&lt;/script&gt;</span>
+
+<span class="cm">// TANPA htmlspecialchars — BERBAHAYA! ❌</span>
+<span class="op">&lt;?=</span> <span class="var">$item</span>[<span class="str">'task'</span>] <span class="op">?&gt;</span>
+<span class="cm">// Output ke HTML: &lt;script&gt;alert('hacked')&lt;/script&gt;</span>
+<span class="cm">// Browser MENJALANKAN script ini → XSS Attack berhasil!</span>
+
+<span class="cm">// DENGAN htmlspecialchars — AMAN ✔</span>
+<span class="op">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="var">$item</span>[<span class="str">'task'</span>]) <span class="op">?&gt;</span>
+<span class="cm">// Output ke HTML: &amp;lt;script&amp;gt;alert('hacked')&amp;lt;/script&amp;gt;</span>
+<span class="cm">// Browser menampilkan sebagai TEKS biasa, tidak dieksekusi</span>
+
+<span class="cm">// Karakter yang dikonversi htmlspecialchars():</span>
+<span class="cm">// &lt; → &amp;lt;    &gt; → &amp;gt;    &amp; → &amp;amp;    " → &amp;quot;</span></pre>
+              </div>
+              <div class="callout tip"><span class="ico">🛡️</span>
+                <p><strong>Dua serangan berbeda:</strong> <code>mysqli_real_escape_string</code> melindungi dari <em>SQL Injection</em> (serangan di database). <code>htmlspecialchars</code> melindungi dari <em>XSS</em> (serangan di browser user). Keduanya diperlukan untuk keamanan lengkap!</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 3 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#fef9c3;color:#854d0e;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">⚡ Sedang</span>
+              <h3>Tampilkan kartu dengan border merah jika sudah melewati deadline!</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Fitur visualnya kurang informatif. Bisa tambahkan indikator bahwa tugas ini sudah melewati deadline? Misalnya border merah atau badge 'Terlambat'?"</p>
+              </div>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — Tambah variabel $is_overdue di foreach kartu</span>
+                </div>
+                <pre><span class="kw">foreach</span> (<span class="var">$filtered_tasks</span> <span class="kw">as</span> <span class="var">$item</span>):
+    <span class="var">$priority_class</span> = ...;
+    <span class="var">$is_finished</span>   = (<span class="var">$slug</span> == <span class="str">'selesai'</span>);
+
+    <span class="cm">// TAMBAH: Cek overdue — belum selesai DAN tanggal sudah lewat</span>
+    <span class="var">$is_overdue</span> = !<span class="var">$is_finished</span>
+        && <span class="fn">strtotime</span>(<span class="var">$item</span>[<span class="str">'tanggal'</span>]) < <span class="fn">strtotime</span>(<span class="str">'today'</span>);
+<span class="kw">endforeach</span>;</pre>
+              </div>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP dalam HTML — Gunakan $is_overdue di kartu</span>
+                </div>
+                <pre><span class="cm">&lt;!-- Tambah class border-danger jika overdue --&gt;</span>
+&lt;div class="card draggable ... &lt;?= <span class="var">$is_overdue</span> ? <span class="str">'border border-2 border-danger'</span> : <span class="str">''</span> ?&gt;"&gt;
+
+  &lt;?php <span class="kw">if</span> (<span class="var">$is_overdue</span>): ?&gt;
+    <span class="cm">&lt;!-- Badge Terlambat di atas konten kartu --&gt;</span>
+    &lt;div class="bg-danger text-white text-center small fw-semibold py-1 rounded-top-2"&gt;
+      ⚠️ Terlambat!
+    &lt;/div&gt;
+  &lt;?php <span class="kw">endif</span>; ?&gt;
+
+  &lt;div class="card-body p-2"&gt; ... &lt;/div&gt;
+&lt;/div&gt;</pre>
+              </div>
+              <div class="callout tip"><span class="ico">💡</span>
+                <p>Logika <code>!$is_finished</code> memastikan tugas yang sudah selesai (walau lewat deadline) tidak diberi label terlambat. Tugas selesai = tetap hijau karena sudah dikerjakan.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 4 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#fef9c3;color:#854d0e;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">⚡ Sedang</span>
+              <h3>Coba hapus e.preventDefault() di dragover. Apa yang terjadi?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Di script.js ada baris <code>e.preventDefault()</code>. Coba hapus baris itu saja, jangan yang lain. Lalu coba drag kartu. Apa yang berubah?"</p>
+              </div>
+              <p><strong>Jawaban: <span style="color:var(--danger);">Drag &amp; drop BERHENTI TOTAL.</span></strong> Kartu tidak bisa dipindah ke kolom lain sama sekali.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">JavaScript — Penjelasan Mengapa WAJIB Ada</span>
+                </div>
+                <pre><span class="var">droppable</span>.<span class="fn">addEventListener</span>(<span class="str">'dragover'</span>, <span class="var">e</span> =&gt; {
+    <span class="var">e</span>.<span class="fn">preventDefault</span>(); <span class="cm">// ← HAPUS INI = drag&amp;drop mati total</span>
+
+    <span class="cm">// KENAPA WAJIB?
+    // Browser punya aturan default:
+    // "Elemen HTML TIDAK boleh menerima drop."
+    //
+    // e.preventDefault() membatalkan aturan default itu.
+    //
+    // Tanpa baris ini:
+    // - Browser menolak drop sebelum event 'drop' terjadi
+    // - Event 'drop' tidak akan pernah terpanggil
+    // - appendChild() tidak pernah berjalan
+    // - Kartu tidak bisa pindah kolom</span>
+});</pre>
+              </div>
+              <div class="callout tip"><span class="ico">🎯</span>
+                <p><strong>Aturan emas HTML5 Drag &amp; Drop:</strong> Selalu panggil <code>e.preventDefault()</code> di listener <code>dragover</code>. Ini satu-satunya cara mengizinkan drop di elemen HTML. Ini bukan bug — ini desain standar W3C untuk drag &amp; drop.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 5 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#fef9c3;color:#854d0e;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">⚡ Sedang</span>
+              <h3>Bagaimana menambahkan fitur EDIT nama tugas?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Nama tugas 'Belajar PHP' salah ketik jadi 'Belajar PH'. Bagaimana mengubahnya? Fitur edit-nya kok tidak ada?"</p>
+              </div>
+              <p>Pola edit mirip dengan hapus: pakai GET parameter untuk detect mode edit, tampilkan form dengan data lama, kirim UPDATE query via POST.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — Tambah di awal index.php (handler update)</span>
+                </div>
+                <pre><span class="cm">// Tangani submit form edit</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$_POST</span>[<span class="str">'update_task'</span>])) {
+    <span class="var">$id</span>   = (<span class="kw">int</span>) <span class="var">$_POST</span>[<span class="str">'id'</span>];
+    <span class="var">$task</span> = <span class="fn">mysqli_real_escape_string</span>(<span class="var">$db</span>, <span class="var">$_POST</span>[<span class="str">'task_input'</span>]);
+    <span class="fn">mysqli_query</span>(<span class="var">$db</span>, <span class="str">"UPDATE tasks SET task='$task' WHERE id=$id"</span>);
+    <span class="fn">header</span>(<span class="str">'location:index.php?notif=updated'</span>);
+    <span class="fn">exit</span>();
+}
+
+<span class="cm">// Tambah notif 'updated' di pembacaan notif:</span>
+<span class="kw">if</span> (<span class="var">$notif</span> == <span class="str">'updated'</span>)
+    <span class="var">$msg</span> = <span class="fn">alert</span>(<span class="str">'info'</span>, <span class="str">'pen'</span>, <span class="str">'Tugas berhasil diubah.'</span>);</pre>
+              </div>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">JavaScript — Isi form edit saat tombol diklik</span>
+                </div>
+                <pre><span class="cm">// JS untuk mengisi form edit modal dengan data kartu</span>
+<span class="kw">function</span> <span class="fn">fillEdit</span>(<span class="var">id</span>, <span class="var">task</span>) {
+    <span class="var">document</span>.<span class="fn">getElementById</span>(<span class="str">'edit-id'</span>).<span class="var">value</span>   = <span class="var">id</span>;
+    <span class="var">document</span>.<span class="fn">getElementById</span>(<span class="str">'edit-task'</span>).<span class="var">value</span> = <span class="var">task</span>;
+}
+
+<span class="cm">&lt;!-- Tombol edit di dalam kartu tugas --&gt;</span>
+&lt;button data-bs-toggle="modal" data-bs-target="#editTaskModal"
+        onclick="fillEdit(&lt;?= $item['id'] ?&gt;,
+                          '&lt;?= htmlspecialchars($item['task'], ENT_QUOTES) ?&gt;')"&gt;
+  &lt;i class="fa-solid fa-pen"&gt;&lt;/i&gt;
+&lt;/button&gt;</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 6 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#fef9c3;color:#854d0e;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">⚡ Sedang</span>
+              <h3>Internet mati SAAT drag kartu — apa yang terjadi?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "User drag kartu ke kolom 'Selesai'. Kartu sudah pindah di layar. Tapi tiba-tiba internet mati sebelum fetch() selesai. Apa yang terjadi?"</p>
+              </div>
+              <p><strong>Jawaban: <span style="color:var(--danger);">Visual berubah, database TIDAK terupdate.</span></strong> Kartu pindah di layar karena <code>appendChild()</code> sudah berjalan, tapi fetch() gagal → .catch() terpanggil → PHP tidak pernah terima request → database tidak berubah.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">JavaScript — Solusi error handling yang lebih baik</span>
+                </div>
+                <pre><span class="fn">fetch</span>(<span class="str">'index.php'</span>, { <span class="var">method</span>: <span class="str">'POST'</span>, <span class="var">body</span>: <span class="var">formData</span> })
+  .<span class="fn">then</span>(<span class="var">res</span> =&gt; <span class="var">res</span>.<span class="fn">text</span>())
+  .<span class="fn">then</span>(() =&gt; {
+    <span class="fn">updateColumnCounts</span>();  <span class="cm">// Update badge jumlah</span>
+  })
+  .<span class="fn">catch</span>(<span class="var">err</span> =&gt; {
+    <span class="var">console</span>.<span class="fn">error</span>(<span class="str">'Gagal update:'</span>, <span class="var">err</span>);
+
+    <span class="cm">// PERBAIKAN: Beri tahu user dan reload halaman</span>
+    <span class="fn">alert</span>(<span class="str">'Gagal menyimpan. Periksa koneksi internet!'</span>);
+    <span class="var">window</span>.<span class="var">location</span>.<span class="fn">reload</span>(); <span class="cm">// Reset visual sesuai database</span>
+  });</pre>
+              </div>
+              <div class="callout info"><span class="ico">💡</span>
+                <p>Ini contoh <strong>inkonsistensi state</strong>: tampilan (visual) dan data (database) tidak sinkron. Solusi terbaik: kalau .catch() terpanggil, reload halaman agar tampilan kembali sesuai data yang benar-benar tersimpan di database.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 7 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#dcfce7;color:#15803d;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">✅ Mudah</span>
+              <h3>Tampilkan tugas High priority selalu di atas dalam setiap kolom!</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Tugas prioritas High kan lebih penting. Bisa ubah kode agar High selalu muncul paling atas di kolom, lalu Medium, lalu Low?"</p>
+              </div>
+              <p>Solusi: Ubah query SQL dengan <code>ORDER BY CASE WHEN</code> untuk urutan custom.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">PHP — Ubah query SELECT</span>
+                </div>
+                <pre><span class="cm">// SEBELUM: Hanya urut berdasarkan id (terbaru dulu)</span>
+<span class="var">$tasks_query</span> = <span class="fn">mysqli_query</span>(<span class="var">$db</span>,
+    <span class="str">"SELECT * FROM tasks ORDER BY id DESC"</span>
+);
+
+<span class="cm">// SESUDAH: Urut priority dulu, lalu id</span>
+<span class="var">$tasks_query</span> = <span class="fn">mysqli_query</span>(<span class="var">$db</span>,
+    <span class="str">"SELECT * FROM tasks
+     ORDER BY
+       CASE priority
+         WHEN 'High'   THEN 1
+         WHEN 'Medium' THEN 2
+         WHEN 'Low'    THEN 3
+         ELSE 4
+       END ASC,
+       id DESC"</span>
+);</pre>
+              </div>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>CASE WHEN di SQL</strong> seperti switch-case — beri angka ke setiap nilai. High=1, Medium=2, Low=3. ORDER BY angka itu ASC (kecil ke besar): High (angka 1) muncul duluan. ini adalah <em>custom sort order</em> di SQL.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 8 -->
+          <div class="acc-item" onclick="acc(this)">
+            <div class="acc-head">
+              <span class="acc-num" style="background:#f3e8ff;color:#7e22ce;font-size:10px;min-width:78px;text-align:center;padding:4px 6px;">🔴 Sulit</span>
+              <h3>Dua user drag kartu yang sama bersamaan — siapa yang menang?</h3>
+              <span class="acc-arrow">▾</span>
+            </div>
+            <div class="acc-body">
+              <div class="callout warn"><span class="ico">🎓</span>
+                <p><strong>Skenario Guru:</strong> "Kamu dan temanmu sama-sama buka halaman ini. Kamu drag kartu yang sama ke 'Selesai', temanmu drag kartu yang sama ke 'Proses', di waktu yang bersamaan. Apa yang terjadi?"</p>
+              </div>
+              <p><strong>Jawaban: <span style="color:var(--js);">“Last Write Wins.”</span></strong> Siapa yang terakhir mengirim fetch() POST ke server — itulah yang tersimpan di database. Visual masing-masing browser bisa tidak sinkron dengan database.</p>
+              <div class="code-wrap">
+                <div class="code-top">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-lang">Ilustrasi Race Condition</span>
+                </div>
+                <pre><span class="cm">// User A drag ke "selesai" → fetch POST → DB: status='selesai'</span>
+<span class="cm">// User B drag ke "proses"  → fetch POST → DB: status='proses'</span>
+<span class="cm">//</span>
+<span class="cm">// Jika request B tiba SETELAH A:</span>
+<span class="cm">//   Database akhir: status='proses' (B menang)</span>
+<span class="cm">//   Visual A: kartu di kolom 'selesai' ← TIDAK SINKRON dengan DB!</span>
+<span class="cm">//   Visual B: kartu di kolom 'proses'  ← sesuai DB</span>
+<span class="cm">//</span>
+<span class="cm">// Ini disebut RACE CONDITION — kode UKK tidak punya locking</span>
+
+<span class="cm">// Solusi tingkat lanjut (informasi tambahan):</span>
+<span class="cm">// Tambah kolom 'updated_at TIMESTAMP' di tabel tasks</span>
+<span class="cm">// Saat UPDATE, cek dulu apakah updated_at masih sama:</span>
+<span class="str">"UPDATE tasks SET status='$status', updated_at=NOW()
+ WHERE id=$id AND updated_at='$last_known_timestamp'"</span>
+<span class="cm">// Jika 0 rows affected = orang lain sudah mengubah duluan</span></pre>
+              </div>
+              <div class="callout info"><span class="ico">💡</span>
+                <p><strong>Race Condition</strong> adalah masalah umum dalam sistem multi-user. Solusi sederhana: reload halaman setelah drag berhasil (tapi performa turun). Solusi profesional: optimistic locking dengan timestamp/version number di database.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── QUIZ ── -->
+      <div class="view" id="view-quiz">
+        <div class="quiz-wrap">
+          <div class="page-header">
+            <h2 style="font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:var(--ink);">🧠 Kuis Interaktif
+            </h2>
+          </div>
+
+          <!-- Intro -->
+          <div class="q-intro" id="q-intro">
+            <div class="q-intro-badge">🧠</div>
+            <h2>Siap Diuji?</h2>
+            <p>20 soal pilihan ganda dari PHP, JavaScript, CSS & Bootstrap — semua dari kode project UKK-mu.</p>
+            <div class="q-stats">
+              <div class="q-stat">
+                <div class="val">20</div>
+                <div class="lbl">Soal</div>
+              </div>
+              <div class="q-stat">
+                <div class="val">4</div>
+                <div class="lbl">Topik</div>
+              </div>
+              <div class="q-stat">
+                <div class="val">∞</div>
+                <div class="lbl">Ulangi</div>
+              </div>
+            </div>
+            <button class="btn-primary" onclick="startQuiz()">Mulai Kuis →</button>
+          </div>
+
+          <!-- Question -->
+          <div class="q-screen" id="q-screen">
+            <div class="q-topbar">
+              <div class="q-counter">Soal <b id="qcur">1</b> / <b id="qtot">20</b></div>
+              <div class="q-pbar">
+                <div class="q-pbar-fill" id="qbar"></div>
+              </div>
+            </div>
+            <div class="q-card">
+              <div id="q-cat"></div>
+              <div class="q-text" id="q-text"></div>
+              <div class="q-code" id="q-code" style="display:none"></div>
+            </div>
+            <div class="opts" id="opts"></div>
+            <div class="feedback" id="feedback"></div>
+            <button class="btn-next" id="btn-next" onclick="nextQ()"></button>
+          </div>
+
+          <!-- Result -->
+          <div class="r-screen" id="r-screen">
+            <div class="r-ring-wrap">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle class="r-ring-bg" cx="80" cy="80" r="65" />
+                <circle class="r-ring-fill" id="r-ring" cx="80" cy="80" r="65" />
+              </svg>
+              <div class="r-score-text">
+                <div class="big" id="r-big">0%</div>
+                <div class="small">nilai</div>
+              </div>
+            </div>
+            <div class="r-title" id="r-title"></div>
+            <div class="r-sub" id="r-sub"></div>
+            <div class="r-breakdown">
+              <div class="r-item">
+                <div class="v" id="r-ok" style="color:var(--css)">0</div>
+                <div class="l">Benar ✅</div>
+              </div>
+              <div class="r-item">
+                <div class="v" id="r-no" style="color:#ef4444">0</div>
+                <div class="l">Salah ❌</div>
+              </div>
+              <div class="r-item">
+                <div class="v" id="r-pct" style="color:var(--accent)">0%</div>
+                <div class="l">Nilai</div>
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="startQuiz()">Ulangi Kuis</button>
+            <button class="btn-primary" onclick="go('home')">Kembali ke Beranda</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- #app -->
+
+  <script>
+    // ════════════════════════════════════
+    //  GATE LOGIC
+    // ════════════════════════════════════
+    const PASS = 'fiqar ganteng';
+    let gateShown = false;
+
+    // Build dot indicators
+    const dotsEl = document.getElementById('gate-dots');
+    for (let i = 0; i < PASS.length; i++) {
+      const d = document.createElement('span');
+      d.className = 'gate-dot';
+      d.id = 'gd' + i;
+      dotsEl.appendChild(d);
+    }
+
+    function gateType() {
+      const val = document.getElementById('gate-input').value;
+      document.getElementById('gate-err').classList.remove('show');
+      document.getElementById('gate-input').classList.remove('error');
+
+      // Fill dots
+      for (let i = 0; i < PASS.length; i++) {
+        const d = document.getElementById('gd' + i);
+        if (d) d.classList.toggle('filled', i < val.length);
+      }
+    }
+
+    function toggleGateEye() {
+      const inp = document.getElementById('gate-input');
+      const eye = document.getElementById('gate-eye');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        eye.textContent = '🙈';
+      } else {
+        inp.type = 'password';
+        eye.textContent = '👁';
+      }
+    }
+
+    function gateSubmit() {
+      const val = document.getElementById('gate-input').value;
+      const inp = document.getElementById('gate-input');
+      const err = document.getElementById('gate-err');
+
+      if (val.toLowerCase().trim() === PASS) {
+        inp.classList.add('success');
+        setTimeout(() => {
+          document.getElementById('gate').classList.add('exit');
+          setTimeout(() => {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('app').classList.add('visible');
+          }, 700);
+        }, 300);
+      } else {
+        inp.classList.add('error');
+        err.classList.add('show');
+        setTimeout(() => inp.classList.remove('error'), 500);
+      }
+    }
+
+    // ════════════════════════════════════
+    //  NAVIGATION
+    // ════════════════════════════════════
+    const ALL_VIEWS = ['home', 'php', 'js', 'css', 'bs', 'readme', 'alur', 'quiz', 'challenge'];
+    const visited = new Set();
+
+    function go(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + id).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.toggle('active', n.getAttribute('onclick') === `go('${id}')`);
+      });
+
+      // Jika tab readme dibuka, otomatis fetch & render
+      if (id === 'readme') {
+        fetchReadme();
+      }
+
+      visited.add(id);
+      updateProg();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Auto-close sidebar on mobile
+      if (window.innerWidth <= 768) {
+        document.querySelector('.sidebar').classList.remove('open');
+        const overlay = document.getElementById('sidebar-overlay');
+        overlay.classList.remove('open');
+        setTimeout(() => overlay.style.display = 'none', 300);
+      }
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      
+      if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+        setTimeout(() => overlay.style.display = 'none', 300);
+      } else {
+        overlay.style.display = 'block';
+        // forced reflow for transition
+        void overlay.offsetWidth;
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+      }
+    }
+
+    function updateProg() {
+      const pct = Math.round((visited.size / ALL_VIEWS.length) * 100);
+      document.getElementById('pfill').style.width = pct + '%';
+      document.getElementById('pct').textContent = pct + '%';
+    }
+
+    // ════════════════════════════════════
+    //  FETCH README
+    // ════════════════════════════════════
+    function fetchReadme() {
+      const contentDiv = document.getElementById('readme-content');
+      const loadingDiv = document.getElementById('readme-loading');
+
+      if (contentDiv.innerHTML.trim() !== '') return; // Jangan fetch lagi jika sudah ada
+
+      fetch('UKK/README.md', { cache: "no-store" })
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.text();
+        })
+        .then(text => {
+          loadingDiv.style.display = 'none';
+          contentDiv.style.display = 'block';
+          // Menggunakan Marked.js untuk render Markdown ke HTML
+          contentDiv.innerHTML = marked.parse(text);
+        })
+        .catch(error => {
+          loadingDiv.style.display = 'none';
+          contentDiv.style.display = 'block';
+          contentDiv.innerHTML = `<div class="callout err" style="background:#fef2f2; border-left:3px solid #ef4444; color:#7f1d1d;">
+        <span class="ico">❌</span>
+        <p>Gagal memuat README.md. Pastikan Anda menjalankan file ini lewat localhost (Server XAMPP/Laragon) bukan dari file:///</p>
+      </div>`;
+          console.error('Fetch error:', error);
+        });
+    }
+
+    // ════════════════════════════════════
+    //  ACCORDION
+    // ════════════════════════════════════
+    function acc(el) {
+      el.classList.toggle('open');
+    }
+
+    // ════════════════════════════════════
+    //  QUIZ DATA
+    // ════════════════════════════════════
+    const QS = [
+      { cat: 'PHP', cc: 'php', q: 'Apa fungsi mysqli_real_escape_string() pada kode ini?', code: '$task = mysqli_real_escape_string($db, $_POST[\'task_input\']);', opts: ['Mengubah huruf jadi kapital semua', 'Membersihkan input dari karakter berbahaya — mencegah SQL Injection', 'Memeriksa apakah input kosong', 'Mengkonversi tipe data menjadi string'], ans: 1, exp: 'mysqli_real_escape_string() membersihkan karakter seperti tanda kutip yang bisa merusak query SQL. Ini perlindungan dasar dari serangan SQL Injection.' },
+      { cat: 'PHP', cc: 'php', q: 'Kenapa exit() wajib setelah header("location:...")?', code: 'header(\'location:index.php?notif=added\');\nexit();', opts: ['Agar loading lebih cepat', 'Karena header() akan error tanpa exit()', 'Agar PHP tidak lanjut eksekusi kode di bawahnya sebelum browser redirect', 'exit() membersihkan database otomatis'], ans: 2, exp: 'header() hanya mendaftarkan redirect — PHP tetap lanjut ke bawah. exit() memaksa PHP berhenti total agar tidak ada kode yang tidak diinginkan ikut dieksekusi.' },
+      { cat: 'PHP', cc: 'php', q: 'Apa perbedaan $_POST dan $_GET di project ini?', opts: ['$_POST lebih lambat dari $_GET', '$_POST untuk form (tidak terlihat di URL), $_GET untuk data di URL seperti ?del_task=5', '$_GET hanya bisa digunakan untuk angka', 'Keduanya sama saja'], ans: 1, exp: '$_POST mengirim data di body request (tidak terlihat di URL) — dipakai untuk form tambah tugas. $_GET mengirim data via URL seperti ?del_task=5 — dipakai untuk link hapus.' },
+      { cat: 'PHP', cc: 'php', q: 'Apa fungsi (int) di baris ini?', code: '$id = (int) $_GET[\'del_task\'];', opts: ['Mengubah $id menjadi float', 'Memaksa nilai jadi integer — mencegah karakter berbahaya masuk ke query SQL', 'Membulatkan angka desimal', 'Mengubah string menjadi array'], ans: 1, exp: '(int) adalah type casting — memaksa nilai menjadi angka bulat. Kalau ada yang coba ?del_task=1;DROP TABLE, hasilnya jadi 1 saja. Keamanan tambahan terhadap SQL Injection.' },
+      { cat: 'PHP', cc: 'php', q: 'Apa arti operator ?: (Elvis) di baris ini?', code: '$row[\'status\'] = $row[\'status\'] ?: \'belum\';', opts: ['Kalau status "belum", ubah jadi kosong', 'Kalau status tidak kosong pakai nilainya, kalau kosong isi dengan "belum"', 'Bandingkan dua nilai dan kembalikan yang lebih besar', 'Operator ini tidak valid di PHP'], ans: 1, exp: 'Elvis operator (?:): kalau nilai di kiri truthy (tidak kosong) → pakai itu. Kalau falsy (kosong/null) → pakai nilai di kanan ("belum").' },
+      { cat: 'PHP', cc: 'php', q: 'Apa fungsi ORDER BY id DESC di query SELECT?', code: 'SELECT * FROM tasks ORDER BY id DESC', opts: ['Menghapus data duplikat', 'Mengurutkan data dari A-Z', 'Menampilkan tugas dari yang paling baru (ID terbesar) ke paling lama', 'Membatasi jumlah data'], ans: 2, exp: 'ORDER BY id DESC mengurutkan berdasarkan kolom id secara Descending (menurun). ID terbesar = data terbaru. Hasilnya: tugas terbaru muncul di atas.' },
+      { cat: 'PHP', cc: 'php', q: 'Apa terjadi jika kondisi if (!empty($task) && ...) bernilai false?', opts: ['Data tetap disimpan ke database', 'PHP crash dengan error fatal', 'Masuk ke blok else, tampilkan pesan error kepada user', 'Halaman otomatis reload'], ans: 2, exp: 'Kalau salah satu field kosong, kondisi false dan masuk ke blok else yang menjalankan alert() untuk menampilkan pesan "Harap isi semua kolom".' },
+      { cat: 'JS', cc: 'js', q: 'Kenapa e.preventDefault() WAJIB di event dragover?', code: 'droppable.addEventListener(\'dragover\', e => {\n  e.preventDefault(); // WAJIB!\n});', opts: ['Untuk mencegah halaman scroll saat drag', 'Karena tanpanya browser melarang drop — event drop tidak akan pernah terjadi', 'Untuk mempercepat animasi drag', 'Agar kartu tidak bisa diklik'], ans: 1, exp: 'Browser secara default melarang drop di sembarang tempat. e.preventDefault() membatalkan larangan itu. Tanpa baris ini, event drop tidak akan pernah terpanggil.' },
+      { cat: 'JS', cc: 'js', q: 'Apa yang dilakukan appendChild(draggingItem)?', code: 'const draggingItem = document.querySelector(\'.dragging\');\ndroppable.appendChild(draggingItem);', opts: ['Membuat salinan/duplikat kartu baru', 'Menghapus kartu dari DOM', 'Memindahkan kartu menjadi anak dari kolom tujuan — kartu pindah kolom secara visual', 'Mengubah warna kartu'], ans: 2, exp: 'appendChild() memindahkan elemen HTML ke dalam elemen lain. Kartu yang ditarik menjadi anak dari kolom tujuan — inilah yang membuat kartu terlihat berpindah kolom.' },
+      { cat: 'JS', cc: 'js', q: 'Bagaimana JS tahu kartu dipindah ke kolom mana?', code: 'const newStatus = draggable.parentElement.getAttribute(\'data-status\');', opts: ['JS menghitung posisi pixel kartu', 'Membaca atribut data-status dari elemen induk kartu setelah dilepas', 'Memeriksa warna background kolom', 'Mengirim pertanyaan ke PHP dulu'], ans: 1, exp: 'Setelah kartu dilepas (dragend), parentElement adalah kolom tempat kartu mendarat. getAttribute("data-status") membaca nilai kolom itu, misalnya "proses" atau "selesai".' },
+      { cat: 'JS', cc: 'js', q: 'Apa fungsi Fetch API di script.js ini?', code: 'fetch(\'index.php\', { method: \'POST\', body: formData })\n  .then(res => res.text())\n  .then(() => { /* update tampilan */ });', opts: ['Mengunduh file baru dari server', 'Mengirim status baru ke PHP untuk update database, tanpa reload halaman', 'Membuat koneksi database dari JavaScript', 'Mengambil template HTML baru'], ans: 1, exp: 'Fetch API mengirim request POST ke index.php membawa id dan status baru. PHP update database, JS update tampilan — semua tanpa reload halaman.' },
+      { cat: 'JS', cc: 'js', q: 'Apa bedanya == dan === di JavaScript?', code: 'if (newStatus === \'selesai\') { ... }', opts: ['Tidak ada bedanya', '== lebih cepat', '== bandingkan nilai saja, === bandingkan nilai DAN tipe data', '=== hanya untuk angka'], ans: 2, exp: '==: "5" == 5 → true (ada type coercion). ===: "5" === 5 → false (tipe berbeda). Pakai === lebih aman.' },
+      { cat: 'JS', cc: 'js', q: 'Kenapa classList.add("dragging") di dragstart dan classList.remove("dragging") di dragend?', opts: ['Untuk simpan data ke localStorage', 'Class .dragging adalah sinyal ke CSS untuk aktifkan efek visual, lalu hapus saat dilepas agar kembali normal', 'Untuk cegah kartu diklik dua kali', 'Karena event dragstart dan dragend butuh class berbeda'], ans: 1, exp: 'JS menambah class → CSS aktifkan efek (opacity 0.5, scale 1.02). JS hapus class → efek hilang. Ini pola komunikasi JS ↔ CSS yang dipakai di seluruh kode.' },
+      { cat: 'JS', cc: 'js', q: 'Apa yang dilakukan .catch() pada Fetch API?', code: 'fetch(...)\n  .then(() => { ... })\n  .catch(err => console.error(\'Gagal:\', err));', opts: ['Menangkap error jika request gagal — misal server mati atau koneksi putus', 'Menjalankan kode sebelum fetch', 'Membatalkan request yang berjalan', 'Mengubah method menjadi GET'], ans: 0, exp: '.catch() adalah error handler. Kalau fetch gagal (server error, offline, timeout), .catch() mencegah aplikasi crash dan bisa tampilkan pesan error.' },
+      { cat: 'CSS', cc: 'css', q: 'Kenapa min-width dan max-width kolom kanban keduanya 320px?', code: '.kanban-column {\n  min-width: 320px;\n  max-width: 320px;\n}', opts: ['Ini adalah bug', 'Mengunci lebar kolom tepat 320px — tidak mengecil atau membesar', 'Bootstrap butuh ini agar d-flex bekerja', 'Agar kolom bisa scroll horizontal'], ans: 1, exp: 'Min-width dan max-width sama = mengunci ukuran. Bootstrap pakai persentase yang tidak bisa menjamin ukuran tetap. CSS kustom diperlukan untuk "mematok" lebar kolom.' },
+      { cat: 'CSS', cc: 'css', q: 'Siapa yang menambahkan class .dragging ke kartu?', code: '.card.draggable.dragging {\n  opacity: 0.5;\n  transform: scale(1.02);\n}', opts: ['CSS menambahkannya saat hover', 'PHP menambahkan saat render HTML', 'JavaScript lewat classList.add("dragging") saat event dragstart', 'Bootstrap menambah otomatis'], ans: 2, exp: 'CSS tidak bisa menambahkan class sendiri. JavaScript yang menambahkan via draggable.classList.add("dragging") saat dragstart. CSS hanya bereaksi ketika class itu ada di elemen.' },
+      { cat: 'CSS', cc: 'css', q: 'Apa fungsi min-height: 100px pada .droppable?', code: '.droppable {\n  min-height: 100px;\n}', opts: ['Batasi jumlah kartu dalam satu kolom', 'Agar kolom kosong tetap punya area yang bisa dijadikan target drop', 'Membuat scrollbar dalam kolom', 'Mengatur tinggi kartu tugas'], ans: 1, exp: 'Tanpa min-height, kolom kosong akan collapse ke tinggi 0 dan tidak bisa menerima kartu. min-height: 100px memastikan area drop selalu ada meski kolom kosong.' },
+      { cat: 'Bootstrap', cc: 'bs', q: 'Apa terjadi jika data-bs-toggle dan data-bs-target dihapus dari tombol?', code: '<button data-bs-toggle="modal" data-bs-target="#addTaskModal">', opts: ['Tombol jadi disabled', 'Modal tetap bisa dibuka dengan cara lain', 'Tombol tetap bisa diklik tapi popup modal tidak muncul', 'Seluruh halaman error'], ans: 2, exp: 'data-bs-toggle="modal" dan data-bs-target adalah instruksi Bootstrap untuk membuka modal saat klik. Tanpa keduanya, tombol hanya tombol biasa — tidak ada popup yang muncul.' },
+      { cat: 'Bootstrap', cc: 'bs', q: 'Apa fungsi overflow-x-auto pada tag main?', code: '<main class="d-flex gap-4 pb-4 overflow-x-auto">', opts: ['Menyembunyikan konten yang melebihi lebar', 'Membuat halaman bisa di-zoom', 'Menampilkan scrollbar horizontal jika kolom melebihi lebar layar', 'Mengatur tinggi maksimal area kanban'], ans: 2, exp: 'overflow-x-auto membuat scrollbar horizontal muncul otomatis kalau konten melebihi lebar container. Penting untuk layout kanban di layar kecil agar semua kolom bisa diakses.' },
+      { cat: 'Bootstrap', cc: 'bs', q: 'Apa perbedaan text-bg-danger dengan text-danger?', code: '<span class="badge text-bg-danger">High</span>', opts: ['Tidak ada bedanya', 'text-bg-danger ubah warna teks DAN background sekaligus, text-danger hanya ubah warna teks', 'text-bg-danger khusus untuk button', 'text-danger lebih baru'], ans: 1, exp: 'text-bg-danger (Bootstrap 5.3+) adalah class kombinasi yang mengatur warna teks DAN background sekaligus. text-danger hanya mengubah warna teks, background tetap transparan.' },
+    ];
+
+    // ════════════════════════════════════
+    //  QUIZ LOGIC
+    // ════════════════════════════════════
+    let cur = 0, score = 0, locked = false;
+
+    function startQuiz() {
+      cur = 0; score = 0; locked = false;
+      document.getElementById('q-intro').style.display = 'none';
+      document.getElementById('r-screen').classList.remove('active');
+      const qs = document.getElementById('q-screen');
+      qs.classList.add('active');
+      document.getElementById('qtot').textContent = QS.length;
+      renderQ();
+    }
+
+    function renderQ() {
+      locked = false;
+      const q = QS[cur];
+      document.getElementById('qcur').textContent = cur + 1;
+      document.getElementById('qbar').style.width = ((cur / QS.length) * 100) + '%';
+      document.getElementById('q-cat').innerHTML = `<span class="q-cat ${q.cc}">${q.cat}</span>`;
+      document.getElementById('q-text').textContent = q.q;
+
+      const codeEl = document.getElementById('q-code');
+      if (q.code) { codeEl.style.display = 'block'; codeEl.textContent = q.code; }
+      else { codeEl.style.display = 'none'; }
+
+      const optsEl = document.getElementById('opts');
+      optsEl.innerHTML = '';
+      ['A', 'B', 'C', 'D'].forEach((L, i) => {
+        const d = document.createElement('div');
+        d.className = 'opt';
+        d.innerHTML = `<span class="opt-letter">${L}</span><span>${q.opts[i]}</span>`;
+        d.onclick = () => pick(d, i);
+        optsEl.appendChild(d);
+      });
+
+      const fb = document.getElementById('feedback');
+      fb.className = 'feedback';
+      fb.textContent = '';
+      const nb = document.getElementById('btn-next');
+      nb.classList.remove('show');
+    }
+
+    function pick(el, idx) {
+      if (locked) return;
+      locked = true;
+      const q = QS[cur];
+      document.querySelectorAll('.opt').forEach(o => o.classList.add('locked'));
+
+      if (idx === q.ans) {
+        el.classList.add('correct');
+        score++;
+        showFb(true, '✅ Benar! ' + q.exp);
+      } else {
+        el.classList.add('wrong');
+        document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+        showFb(false, '❌ Kurang tepat. ' + q.exp);
+      }
+
+      const nb = document.getElementById('btn-next');
+      nb.classList.add('show');
+      nb.textContent = cur < QS.length - 1 ? 'Soal Berikutnya →' : 'Lihat Hasil →';
+    }
+
+    function showFb(ok, txt) {
+      const fb = document.getElementById('feedback');
+      fb.className = 'feedback show ' + (ok ? 'correct' : 'wrong');
+      fb.textContent = txt;
+    }
+
+    function nextQ() {
+      cur++;
+      if (cur >= QS.length) showResult();
+      else renderQ();
+    }
+
+    function showResult() {
+      document.getElementById('q-screen').classList.remove('active');
+      const rs = document.getElementById('r-screen');
+      rs.classList.add('active');
+      const pct = Math.round((score / QS.length) * 100);
+      const circ = 2 * Math.PI * 65;
+      const offset = circ - (pct / 100) * circ;
+
+      document.getElementById('r-big').textContent = pct + '%';
+      document.getElementById('r-ok').textContent = score;
+      document.getElementById('r-no').textContent = QS.length - score;
+      document.getElementById('r-pct').textContent = pct + '%';
+
+      setTimeout(() => {
+        document.getElementById('r-ring').style.strokeDashoffset = offset;
+      }, 100);
+
+      const [title, sub] = pct >= 85 ? ['🎉 Luar Biasa!', 'Kamu sudah siap menghadapi sidang UKK!']
+        : pct >= 70 ? ['👍 Hampir!', 'Tinggal sedikit. Ulangi soal yang salah ya.']
+          : pct >= 50 ? ['📚 Lumayan', 'Baca ulang materinya, kamu pasti bisa!']
+            : ['💪 Tetap Semangat!', 'Jangan menyerah, pelajari dari awal ya!'];
+
+      document.getElementById('r-title').textContent = title;
+      document.getElementById('r-sub').textContent = sub;
+      visited.add('quiz');
+      updateProg();
+    }
+  </script>
+</body>
+
+</html>
