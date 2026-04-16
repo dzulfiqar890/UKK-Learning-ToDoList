@@ -1,32 +1,35 @@
-/* Tampilan papan to do list */
+/* Kolom kanban — lebar tetap biar semua kolom sejajar */
 .card-column {
     background-color: #ebecf0;
     min-width: 320px;
     max-width: 320px;
 }
 
-/* Efek drag and drop */
+/* Kartu tugas — kursor berubah jadi tangan saat hover, ada animasi halus */
 .card.draggable {
     cursor: grab;
     transition: box-shadow 0.2s, transform 0.1s;
 }
 
+/* Saat kartu ditekan (sebelum ditarik) */
 .card.draggable:active {
     cursor: grabbing;
 }
 
+/* Tampilan kartu saat sedang ditarik — transparan dan sedikit membesar */
 .card.draggable.dragging {
     opacity: 0.5;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
     transform: scale(1.02);
 }
 
-/* Area drop zone */
+/* Area drop zone — tinggi minimum biar kolom kosong tetap bisa menerima drop */
 .droppable {
     min-height: 100px;
     transition: background-color 0.2s;
 }
 
+/* Warna berubah saat ada kartu yang melayang di atas kolom ini */
 .droppable.drag-over {
     background-color: #dcdfe5 !important;
 }
